@@ -73,8 +73,37 @@ The project is a two-person team, so the template's four suggested roles are sha
 
 ### Screens and navigation
 
-- **Sketches (draw.io):** [`docs/sketches/car-rental-sketches.drawio`](docs/sketches/car-rental-sketches.drawio) — four pages: shared identity and navigation, then one page per workflow with its alternative states. The earlier iteration is kept as [`car-rental-sketches-first-version.drawio`](docs/sketches/car-rental-sketches-first-version.drawio) so the change is visible.
-- **Clickable prototype (exercise 3):** [`docs/prototype/index.html`](docs/prototype/index.html) — 19 static screens built with Bootstrap Studio. Buttons lead to the next screen; nothing is saved. Start at `index.html` and follow the suggested journey: Marco creates R-104 → Luca marks the car ready → Nina checks her phone → Marco marks it handed over.
+The sketches cover the shared layout plus one page per workflow, each with its alternative states. Click an image to open it full size — the pages are wide, because every state of a workflow is drawn side by side.
+
+**Shared identity and navigation**
+
+[![Home screen, colour and status conventions, and the navigation map](docs/sketches/sketch-0-home-and-identity.png)](docs/sketches/sketch-0-home-and-identity.png)
+
+Identity, colour roles (navy for navigation, yellow for the main action, green for *Ready*, red for errors, grey for hints and *Handed over*), the three status badges, the staff Home screen and the navigation map.
+
+**Workflow 1 — Marco rents a car (tablet)**
+
+[![Marco's five screens: input, success, overview, missing licence and no car free](docs/sketches/sketch-1-marco-rent-a-car.png)](docs/sketches/sketch-1-marco-rent-a-car.png)
+
+States drawn: *1 Input*, *2 Success*, *3 Overview*, and the two alternatives *2a Missing input* and *2b No car free*. The red arrows show which input leads to which alternative.
+
+**Workflow 2 — Luca brings the car (tablet)**
+
+[![Luca's screens: yard queue, rental details, success and empty queue](docs/sketches/sketch-2-luca-bring-the-car.png)](docs/sketches/sketch-2-luca-bring-the-car.png)
+
+States drawn: *1 Yard queue*, *2 Rental details*, *3 Success*, and the alternative *1a Empty queue*.
+
+**Workflow 3 — Nina checks her status (phone)**
+
+[![Nina's phone screens: input, being prepared, ready and wrong number](docs/sketches/sketch-3-nina-check-status.png)](docs/sketches/sketch-3-nina-check-status.png)
+
+States drawn: *1 Input*, *2 Being prepared*, *3 Ready*, and the alternative *2a Wrong number*.
+
+Each sketch page carries two notes in its lower half — *Missing details we found* and *Group decisions* — which are the source of the decisions table in section 3.
+
+**Sources and earlier iteration.** The editable originals are [`docs/sketches/car-rental-sketches.drawio`](docs/sketches/car-rental-sketches.drawio). Our first iteration is kept alongside them in [`docs/sketches/first-version/`](docs/sketches/first-version/) with its source file, so the change is visible: it had no shared identity page and no Overview screen, and both were added once we noticed Marco had nowhere to see which cars were ready.
+
+**Clickable prototype (exercise 3).** [`docs/prototype/index.html`](docs/prototype/index.html) — 19 static screens built with Bootstrap Studio. Buttons lead to the next screen; nothing is saved. Start at `index.html` and follow the suggested journey: Marco creates R-104 → Luca marks the car ready → Nina checks her phone → Marco marks it handed over.
 
 **Navigation.** Staff work on a tablet with four top-level entries: Home, New rental, Overview, Yard queue. The customer page is a phone screen with no navigation at all — Nina only ever sees the check form and her own status, reached from a link on her confirmation.
 
@@ -165,7 +194,7 @@ Parcel-tracking pages (for example Swiss Post) show one shipment reduced to a si
 
 | Milestone | Available evidence | Status / next step |
 |---|---|---|
-| 1 — Design draft | Three workflows with alternatives ([`docs/exercise1-workflows.docx`](docs/exercise1-workflows.docx)), sketches for all three plus shared navigation ([`docs/sketches/`](docs/sketches/)), a 19-screen clickable prototype ([`docs/prototype/index.html`](docs/prototype/index.html)), consistent example JSON ([`data/examples/`](data/examples/)) and the proposed operations above | Draft complete. Open: export the sketches to PNG so they render on GitHub without downloading |
+| 1 — Design draft | Three workflows with alternatives ([`docs/exercise1-workflows.docx`](docs/exercise1-workflows.docx)), sketches for all three plus shared navigation, embedded as images in section 2 ([`docs/sketches/`](docs/sketches/)), a 19-screen clickable prototype ([`docs/prototype/index.html`](docs/prototype/index.html)), consistent example JSON ([`data/examples/`](data/examples/)) and the proposed operations above | Complete and ready for submission |
 | 2 — Contract and available implementation | — | Turn the proposed-operations table into an OpenAPI contract, then implement with FastAPI and tests |
 | Integration — later | — | Update after the classroom examples; frontend decision still open, the Bootstrap Studio prototype is a candidate starting point |
 
