@@ -1,0 +1,423 @@
+<mxfile host="Electron" pages="3">
+  <diagram name="1 · Marco · Rent a car" id="9159317562749419876">
+    <mxGraphModel dx="1416" dy="1065" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="c2" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=20;fontColor=#1F3864;" value="Sketch 1: Marco rents a car (desk computer)" vertex="1">
+          <mxGeometry height="30" width="900" x="20" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=15;fontColor=#1F3864;" value="1 · Input" vertex="1">
+          <mxGeometry height="26" width="320" x="20" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#282828;fillColor=#FFFFFF;" value="" vertex="1">
+          <mxGeometry height="460" width="320" x="20" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" parent="1" style="rounded=0;html=1;strokeColor=none;fillColor=#EBEBEB;align=left;spacingLeft=10;fontSize=11;fontColor=#8C8C8C;" value="Desk computer · Marco" vertex="1">
+          <mxGeometry height="26" width="318" x="21" y="91" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=17;fontColor=#282828;" value="New rental" vertex="1">
+          <mxGeometry height="28" width="284" x="38" y="132" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="Customer name" vertex="1">
+          <mxGeometry height="18" width="284" x="38" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=12;fillColor=#FFFFFF;strokeColor=#999999;" value="Nina Keller" vertex="1">
+          <mxGeometry height="28" width="284" x="38" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="c9" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="Licence number" vertex="1">
+          <mxGeometry height="18" width="284" x="38" y="226" as="geometry" />
+        </mxCell>
+        <mxCell id="c10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=12;fillColor=#FFFFFF;strokeColor=#999999;" value="CH 1234567" vertex="1">
+          <mxGeometry height="28" width="284" x="38" y="246" as="geometry" />
+        </mxCell>
+        <mxCell id="c11" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="Pickup and return date" vertex="1">
+          <mxGeometry height="18" width="284" x="38" y="282" as="geometry" />
+        </mxCell>
+        <mxCell id="c12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=12;fillColor=#FFFFFF;strokeColor=#999999;" value="24.09.2026  to  27.09.2026" vertex="1">
+          <mxGeometry height="28" width="284" x="38" y="302" as="geometry" />
+        </mxCell>
+        <mxCell id="c13" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="Car category" vertex="1">
+          <mxGeometry height="18" width="284" x="38" y="338" as="geometry" />
+        </mxCell>
+        <mxCell id="c14" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=12;fillColor=#FFFFFF;strokeColor=#999999;" value="Compact  ▾" vertex="1">
+          <mxGeometry height="28" width="284" x="38" y="358" as="geometry" />
+        </mxCell>
+        <mxCell id="c15" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="Available cars" vertex="1">
+          <mxGeometry height="18" width="284" x="38" y="394" as="geometry" />
+        </mxCell>
+        <mxCell id="c16" parent="1" style="ellipse;html=1;strokeColor=#282828;strokeWidth=1.5;fillColor=#282828;" value="" vertex="1">
+          <mxGeometry height="12" width="12" x="38" y="417" as="geometry" />
+        </mxCell>
+        <mxCell id="c17" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=12;" value="VW Golf · AG 123 456" vertex="1">
+          <mxGeometry height="18" width="264" x="58" y="414" as="geometry" />
+        </mxCell>
+        <mxCell id="c18" parent="1" style="ellipse;html=1;strokeColor=#282828;strokeWidth=1.5;fillColor=#FFFFFF;" value="" vertex="1">
+          <mxGeometry height="12" width="12" x="38" y="439" as="geometry" />
+        </mxCell>
+        <mxCell id="c19" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=12;" value="Toyota Yaris · AG 789 012" vertex="1">
+          <mxGeometry height="18" width="264" x="58" y="436" as="geometry" />
+        </mxCell>
+        <mxCell id="c20" parent="1" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=#282828;fontStyle=1;fontSize=13;fillColor=#FFD646;" value="Create rental" vertex="1">
+          <mxGeometry height="32" width="136" x="38" y="464" as="geometry" />
+        </mxCell>
+        <mxCell id="c21" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=15;fontColor=#1F3864;" value="2 · Success" vertex="1">
+          <mxGeometry height="26" width="320" x="480" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="c22" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#282828;fillColor=#FFFFFF;" value="" vertex="1">
+          <mxGeometry height="460" width="320" x="480" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="c23" parent="1" style="rounded=0;html=1;strokeColor=none;fillColor=#EBEBEB;align=left;spacingLeft=10;fontSize=11;fontColor=#8C8C8C;" value="Desk computer · Marco" vertex="1">
+          <mxGeometry height="26" width="318" x="481" y="91" as="geometry" />
+        </mxCell>
+        <mxCell id="c24" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=17;fontColor=#282828;" value="Rental R-104 created" vertex="1">
+          <mxGeometry height="28" width="284" x="498" y="132" as="geometry" />
+        </mxCell>
+        <mxCell id="c25" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=13;" value="Nina Keller" vertex="1">
+          <mxGeometry height="18" width="284" x="498" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="c26" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=13;" value="VW Golf · AG 123 456" vertex="1">
+          <mxGeometry height="18" width="284" x="498" y="192" as="geometry" />
+        </mxCell>
+        <mxCell id="c27" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=13;" value="24.09.2026 to 27.09.2026" vertex="1">
+          <mxGeometry height="18" width="284" x="498" y="214" as="geometry" />
+        </mxCell>
+        <mxCell id="c28" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=13;" value="Status:" vertex="1">
+          <mxGeometry height="22" width="60" x="498" y="242" as="geometry" />
+        </mxCell>
+        <mxCell id="c29" parent="1" style="rounded=1;arcSize=50;html=1;strokeColor=none;fillColor=#1F3864;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" value="Requested" vertex="1">
+          <mxGeometry height="22" width="88" x="560" y="242" as="geometry" />
+        </mxCell>
+        <mxCell id="c30" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=11;fontColor=#8C8C8C;" value="Sent to the yard queue." vertex="1">
+          <mxGeometry height="16" width="284" x="498" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="c31" parent="1" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=#282828;fontStyle=1;fontSize=13;fillColor=#FFD646;" value="New rental" vertex="1">
+          <mxGeometry height="32" width="112" x="498" y="306" as="geometry" />
+        </mxCell>
+        <mxCell id="c32" parent="1" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=#282828;fontStyle=1;fontSize=13;fillColor=#FFFFFF;" value="Back to overview" vertex="1">
+          <mxGeometry height="32" width="160" x="498" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="c33" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=15;fontColor=#1F3864;" value="2a · Missing input" vertex="1">
+          <mxGeometry height="26" width="320" x="940" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="c34" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#282828;fillColor=#FFFFFF;" value="" vertex="1">
+          <mxGeometry height="460" width="320" x="940" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="c35" parent="1" style="rounded=0;html=1;strokeColor=none;fillColor=#EBEBEB;align=left;spacingLeft=10;fontSize=11;fontColor=#8C8C8C;" value="Desk computer · Marco" vertex="1">
+          <mxGeometry height="26" width="318" x="941" y="91" as="geometry" />
+        </mxCell>
+        <mxCell id="c36" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=17;fontColor=#282828;" value="New rental" vertex="1">
+          <mxGeometry height="28" width="284" x="958" y="132" as="geometry" />
+        </mxCell>
+        <mxCell id="c37" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="Customer name" vertex="1">
+          <mxGeometry height="18" width="284" x="958" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="c38" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=12;fillColor=#FFFFFF;strokeColor=#999999;" value="Nina Keller" vertex="1">
+          <mxGeometry height="28" width="284" x="958" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="c39" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="Licence number" vertex="1">
+          <mxGeometry height="18" width="284" x="958" y="226" as="geometry" />
+        </mxCell>
+        <mxCell id="c40" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=12;fillColor=#FFFFFF;strokeColor=#C82828;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="28" width="284" x="958" y="246" as="geometry" />
+        </mxCell>
+        <mxCell id="c41" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;fontColor=#C82828;" value="! Enter the licence number." vertex="1">
+          <mxGeometry height="16" width="284" x="958" y="278" as="geometry" />
+        </mxCell>
+        <mxCell id="c42" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="Pickup and return date" vertex="1">
+          <mxGeometry height="18" width="284" x="958" y="302" as="geometry" />
+        </mxCell>
+        <mxCell id="c43" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=12;fillColor=#FFFFFF;strokeColor=#999999;" value="24.09.2026  to  27.09.2026" vertex="1">
+          <mxGeometry height="28" width="284" x="958" y="322" as="geometry" />
+        </mxCell>
+        <mxCell id="c44" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="Car category" vertex="1">
+          <mxGeometry height="18" width="284" x="958" y="358" as="geometry" />
+        </mxCell>
+        <mxCell id="c45" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=12;fillColor=#FFFFFF;strokeColor=#999999;" value="Compact  ▾" vertex="1">
+          <mxGeometry height="28" width="284" x="958" y="378" as="geometry" />
+        </mxCell>
+        <mxCell id="c46" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="Available cars" vertex="1">
+          <mxGeometry height="18" width="284" x="958" y="414" as="geometry" />
+        </mxCell>
+        <mxCell id="c47" parent="1" style="ellipse;html=1;strokeColor=#282828;strokeWidth=1.5;fillColor=#282828;" value="" vertex="1">
+          <mxGeometry height="12" width="12" x="958" y="437" as="geometry" />
+        </mxCell>
+        <mxCell id="c48" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=12;" value="VW Golf · AG 123 456" vertex="1">
+          <mxGeometry height="18" width="264" x="978" y="434" as="geometry" />
+        </mxCell>
+        <mxCell id="c49" parent="1" style="ellipse;html=1;strokeColor=#282828;strokeWidth=1.5;fillColor=#FFFFFF;" value="" vertex="1">
+          <mxGeometry height="12" width="12" x="958" y="459" as="geometry" />
+        </mxCell>
+        <mxCell id="c50" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=12;" value="Toyota Yaris · AG 789 012" vertex="1">
+          <mxGeometry height="18" width="264" x="978" y="456" as="geometry" />
+        </mxCell>
+        <mxCell id="c51" parent="1" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=#282828;fontStyle=1;fontSize=13;fillColor=#FFD646;" value="Create rental" vertex="1">
+          <mxGeometry height="32" width="136" x="958" y="484" as="geometry" />
+        </mxCell>
+        <mxCell id="c52" edge="1" parent="1" source="c20" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeWidth=2;strokeColor=#1F3864;fontColor=#1F3864;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="c22" value="all fields valid">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c53" edge="1" parent="1" source="c20" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeWidth=2;strokeColor=#C82828;fontColor=#C82828;fontStyle=1;labelBackgroundColor=#FFFFFF;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="c34" value="licence missing">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="106" y="580" />
+              <mxPoint x="1100" y="580" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c54" parent="1" style="shape=note;size=18;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=12;fontSize=12;fillColor=#FFF2CC;strokeColor=#D6B656;" value="&lt;b&gt;Missing details we found&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Our workflow did not say how Marco finds a returning customer. He retypes the name and licence each time.&lt;br&gt;• The workflow did not show where Marco sees whether a car is ready. We needed an overview screen behind &amp;quot;Back to overview&amp;quot;.&lt;br&gt;• It was unclear what happens if Marco picks the wrong car after submitting." vertex="1">
+          <mxGeometry height="170" width="600" x="20" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="c55" parent="1" style="shape=note;size=18;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=12;fontSize=12;fillColor=#DAE8FC;strokeColor=#6C8EBF;" value="&lt;b&gt;Group decisions&lt;/b&gt;&lt;br&gt;&lt;br&gt;• One customer and one car per rental in the first version.&lt;br&gt;• The overview is a filtered list of today&#39;s rentals with their status. We add it as its own view.&lt;br&gt;• No editing after submitting in version 1. Changing or cancelling a rental comes later.&lt;br&gt;• Only cars that are free for the chosen dates appear in the list, so Marco cannot pick a booked car." vertex="1">
+          <mxGeometry height="176" width="600" x="660" y="620" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="2 · Luca · Bring the car" id="5719448322005366064">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="c56" value="Sketch 2: Luca brings the car (yard tablet)" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=20;fontColor=#1F3864;" vertex="1" parent="1">
+          <mxGeometry x="20" y="10" width="900" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="c57" value="1 · Yard queue" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=15;fontColor=#1F3864;" vertex="1" parent="1">
+          <mxGeometry x="20" y="56" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c58" value="" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#282828;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="20" y="90" width="320" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="c59" value="Yard tablet · Luca" style="rounded=0;html=1;strokeColor=none;fillColor=#EBEBEB;align=left;spacingLeft=10;fontSize=11;fontColor=#8C8C8C;" vertex="1" parent="1">
+          <mxGeometry x="21" y="91" width="318" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c60" value="Yard queue" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=17;fontColor=#282828;" vertex="1" parent="1">
+          <mxGeometry x="38" y="132" width="284" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="c61" value="Sorted by pickup time" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=11;fontColor=#8C8C8C;" vertex="1" parent="1">
+          <mxGeometry x="38" y="166" width="284" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="c62" value="&lt;b&gt;R-104 · Pickup 09:00&lt;/b&gt;&lt;br&gt;VW Golf · AG 123 456&lt;br&gt;Spot B12 · Nina Keller" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=2;fontSize=12;strokeColor=#999999;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="38" y="192" width="284" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="c63" value="Requested" style="rounded=1;arcSize=50;html=1;strokeColor=none;fillColor=#1F3864;fontColor=#FFFFFF;fontStyle=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="236" y="198" width="78" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="c64" value="&lt;b&gt;R-105 · Pickup 10:30&lt;/b&gt;&lt;br&gt;Toyota Yaris · AG 789 012&lt;br&gt;Spot C03 · Tom Meier" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=2;fontSize=12;strokeColor=#999999;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="38" y="268" width="284" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="c65" value="Requested" style="rounded=1;arcSize=50;html=1;strokeColor=none;fillColor=#1F3864;fontColor=#FFFFFF;fontStyle=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="236" y="274" width="78" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="c66" value="2 · Rental details" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=15;fontColor=#1F3864;" vertex="1" parent="1">
+          <mxGeometry x="480" y="56" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c67" value="" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#282828;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="480" y="90" width="320" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="c68" value="Yard tablet · Luca" style="rounded=0;html=1;strokeColor=none;fillColor=#EBEBEB;align=left;spacingLeft=10;fontSize=11;fontColor=#8C8C8C;" vertex="1" parent="1">
+          <mxGeometry x="481" y="91" width="318" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c69" value="Rental R-104" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=17;fontColor=#282828;" vertex="1" parent="1">
+          <mxGeometry x="498" y="132" width="284" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="c70" value="VW Golf · AG 123 456" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="498" y="170" width="284" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="c71" value="Parking spot: B12" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="498" y="192" width="284" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="c72" value="Customer: Nina Keller" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="498" y="214" width="284" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="c73" value="Pickup: 09:00" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="498" y="236" width="284" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="c74" value="Status:" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="498" y="264" width="60" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="c75" value="Requested" style="rounded=1;arcSize=50;html=1;strokeColor=none;fillColor=#1F3864;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="264" width="88" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="c76" value="Mark ready" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=#282828;fontStyle=1;fontSize=13;fillColor=#FFD646;" vertex="1" parent="1">
+          <mxGeometry x="498" y="306" width="112" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="c77" value="Back to queue" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=#282828;fontStyle=1;fontSize=13;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="498" y="350" width="136" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="c78" value="3 · Success" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=15;fontColor=#1F3864;" vertex="1" parent="1">
+          <mxGeometry x="940" y="56" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c79" value="" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#282828;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="940" y="90" width="320" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="c80" value="Yard tablet · Luca" style="rounded=0;html=1;strokeColor=none;fillColor=#EBEBEB;align=left;spacingLeft=10;fontSize=11;fontColor=#8C8C8C;" vertex="1" parent="1">
+          <mxGeometry x="941" y="91" width="318" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c81" value="Rental R-104" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=17;fontColor=#282828;" vertex="1" parent="1">
+          <mxGeometry x="958" y="132" width="284" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="c82" value="VW Golf · AG 123 456" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="958" y="170" width="284" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="c83" value="At the pickup area" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="958" y="192" width="284" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="c84" value="Status:" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="958" y="220" width="60" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="c85" value="Ready" style="rounded=1;arcSize=50;html=1;strokeColor=none;fillColor=#288C46;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="220" width="56" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="c86" value="Marco and Nina can see the car is waiting." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=11;fontColor=#8C8C8C;" vertex="1" parent="1">
+          <mxGeometry x="958" y="248" width="284" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="c87" value="Back to queue" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=#282828;fontStyle=1;fontSize=13;fillColor=#FFD646;" vertex="1" parent="1">
+          <mxGeometry x="958" y="284" width="136" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="c88" value="1a · Empty queue" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=15;fontColor=#1F3864;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="56" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c89" value="" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#282828;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="90" width="320" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="c90" value="Yard tablet · Luca" style="rounded=0;html=1;strokeColor=none;fillColor=#EBEBEB;align=left;spacingLeft=10;fontSize=11;fontColor=#8C8C8C;" vertex="1" parent="1">
+          <mxGeometry x="1401" y="91" width="318" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c91" value="Yard queue" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=17;fontColor=#282828;" vertex="1" parent="1">
+          <mxGeometry x="1418" y="132" width="284" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="c92" value="No cars are requested right now." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1418" y="210" width="284" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="c93" value="New rentals appear here automatically." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=11;fontColor=#8C8C8C;" vertex="1" parent="1">
+          <mxGeometry x="1418" y="228" width="284" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="c94" value="Refresh" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=#282828;fontStyle=1;fontSize=13;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="1418" y="264" width="88" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="c95" value="tap rental" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeWidth=2;strokeColor=#1F3864;fontColor=#1F3864;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="c62" target="c67">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c96" value="Mark ready" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeWidth=2;strokeColor=#1F3864;fontColor=#1F3864;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="c76" target="c79">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c97" value="&lt;b&gt;Missing details we found&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Luca needs the parking spot, otherwise he searches the whole yard. We added it to the queue and the details.&lt;br&gt;• The workflow did not define the order of the queue.&lt;br&gt;• It is open what Luca does if the car is damaged or not at its spot." style="shape=note;size=18;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=12;fontSize=12;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="20" y="490" width="830" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="c98" value="&lt;b&gt;Group decisions&lt;/b&gt;&lt;br&gt;&lt;br&gt;• The queue is sorted by pickup time, earliest first.&lt;br&gt;• A rental leaves the queue once Luca marks it &amp;quot;Ready&amp;quot;.&lt;br&gt;• Reporting a problem with the car stays out of version 1. Luca tells Marco directly for now." style="shape=note;size=18;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=12;fontSize=12;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="890" y="490" width="830" height="122" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="3 · Nina · Check status" id="3695821214030623436">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="c99" value="Sketch 3: Nina checks her car status (phone)" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=20;fontColor=#1F3864;" vertex="1" parent="1">
+          <mxGeometry x="20" y="10" width="900" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="c100" value="1 · Input" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=15;fontColor=#1F3864;" vertex="1" parent="1">
+          <mxGeometry x="20" y="56" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c101" value="" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#282828;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="20" y="90" width="320" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="c102" value="Phone · Nina" style="rounded=0;html=1;strokeColor=none;fillColor=#EBEBEB;align=left;spacingLeft=10;fontSize=11;fontColor=#8C8C8C;" vertex="1" parent="1">
+          <mxGeometry x="21" y="91" width="318" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c103" value="Check your rental" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=17;fontColor=#282828;" vertex="1" parent="1">
+          <mxGeometry x="38" y="132" width="284" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="c104" value="Rental number" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="38" y="170" width="284" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="c105" value="R-104" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=12;fillColor=#FFFFFF;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="38" y="190" width="284" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="c106" value="You find it on your confirmation." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=11;fontColor=#8C8C8C;" vertex="1" parent="1">
+          <mxGeometry x="38" y="222" width="284" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="c107" value="Check status" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=#282828;fontStyle=1;fontSize=13;fillColor=#FFD646;" vertex="1" parent="1">
+          <mxGeometry x="38" y="252" width="128" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="c108" value="2 · Success" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=15;fontColor=#1F3864;" vertex="1" parent="1">
+          <mxGeometry x="480" y="56" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c109" value="" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#282828;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="480" y="90" width="320" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="c110" value="Phone · Nina" style="rounded=0;html=1;strokeColor=none;fillColor=#EBEBEB;align=left;spacingLeft=10;fontSize=11;fontColor=#8C8C8C;" vertex="1" parent="1">
+          <mxGeometry x="481" y="91" width="318" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c111" value="Rental R-104" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=17;fontColor=#282828;" vertex="1" parent="1">
+          <mxGeometry x="498" y="132" width="284" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="c112" value="VW Golf · AG 123 456" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="498" y="170" width="284" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="c113" value="24.09.2026 to 27.09.2026" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="498" y="192" width="284" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="c114" value="Status:" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="498" y="220" width="60" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="c115" value="Ready" style="rounded=1;arcSize=50;html=1;strokeColor=none;fillColor=#288C46;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="220" width="56" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="c116" value="Your car is waiting at the pickup area." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="498" y="252" width="284" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="c117" value="Refresh status" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=#282828;fontStyle=1;fontSize=13;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="498" y="288" width="144" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="c118" value="2a · Wrong number" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=15;fontColor=#1F3864;" vertex="1" parent="1">
+          <mxGeometry x="940" y="56" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c119" value="" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#282828;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="940" y="90" width="320" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="c120" value="Phone · Nina" style="rounded=0;html=1;strokeColor=none;fillColor=#EBEBEB;align=left;spacingLeft=10;fontSize=11;fontColor=#8C8C8C;" vertex="1" parent="1">
+          <mxGeometry x="941" y="91" width="318" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c121" value="Check your rental" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=17;fontColor=#282828;" vertex="1" parent="1">
+          <mxGeometry x="958" y="132" width="284" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="c122" value="Rental number" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="958" y="170" width="284" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="c123" value="R-140" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=12;fillColor=#FFFFFF;strokeColor=#C82828;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="958" y="190" width="284" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="c124" value="! Rental number not found." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;fontColor=#C82828;" vertex="1" parent="1">
+          <mxGeometry x="958" y="222" width="284" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="c125" value="Check the number on your confirmation." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=11;fontColor=#8C8C8C;" vertex="1" parent="1">
+          <mxGeometry x="958" y="242" width="284" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="c126" value="Check status" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;strokeColor=#282828;fontStyle=1;fontSize=13;fillColor=#FFD646;" vertex="1" parent="1">
+          <mxGeometry x="958" y="272" width="128" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="c127" value="number found" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeWidth=2;strokeColor=#1F3864;fontColor=#1F3864;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="c107" target="c109">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c128" value="not found" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeWidth=2;strokeColor=#C82828;fontColor=#C82828;fontStyle=1;labelBackgroundColor=#FFFFFF;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="c107" target="c119">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="102.0" y="410" />
+              <mxPoint x="1100.0" y="410" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c129" value="&lt;b&gt;Missing details we found&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Nina needs to know where to find her rental number. We added a hint below the field.&lt;br&gt;• Anyone who guesses a rental number could see another customer&#39;s rental.&lt;br&gt;• The status word &amp;quot;Requested&amp;quot; means little to a customer." style="shape=note;size=18;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=12;fontSize=12;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="20" y="450" width="600" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="c130" value="&lt;b&gt;Group decisions&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Nina sees the plate number, so she can find her car at the pickup area.&lt;br&gt;• For a customer we show &amp;quot;Being prepared&amp;quot; instead of &amp;quot;Requested&amp;quot;. The stored status stays the same.&lt;br&gt;• Open question for coaching: should Nina also enter her last name to protect her rental details?" style="shape=note;size=18;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=12;fontSize=12;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="660" y="450" width="600" height="154" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

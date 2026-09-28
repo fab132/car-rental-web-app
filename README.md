@@ -1,68 +1,153 @@
-# [car-rental-web-app]
+# CityCar Rental — car-rental-web-app
 
-**Current stage:** Milestone 1 — design draft. Update this README throughout the project; do not start a separate document for each milestone.
-
-Later sections will be introduced in the fourth theory session and subsequent classes. For now, document the design draft below.
-
-Replace the prompts with your group's current thinking. Drafts and open questions are expected; no running backend, database or complete OpenAPI contract is required for this milestone. If your idea is still undecided, use the bar scenario and class exercises as a starting point and identify what you have adapted.
+**Current stage:** Milestone 1 — design draft. This README is the living project document; milestones are added to it rather than to separate files.
 
 ## Project overview
 
-[Briefly describe the application, its intended users and the problem it addresses.]
+CityCar Rental is a small car rental branch. Rentals are agreed at the service desk, but the cars stand in a yard behind the building, and a second employee has to fetch them. Today that handover runs on shouting across the yard and paper notes, so cars are fetched in the wrong order, the desk cannot tell a waiting customer whether their car is ready, and customers queue at the desk to ask.
+
+This web application replaces those notes with one shared status per rental. The service desk creates a rental and picks a free car; the request appears immediately in the yard worker's queue with the parking spot; when the car is at the pickup area the yard worker marks it ready, and both the desk and the customer see that at once. Customers check their own rental on their phone with the rental number instead of asking at the desk.
+
+**Intended users:** service-desk staff and yard staff (staff app on a tablet), and rental customers (status page on a phone).
+
+**Initial scope:** the three workflows below — create a rental, prepare the car, check the status. Payment, insurance options, online self-booking, returns, cleaning logs and damage reports are deliberately out of scope for the first version.
 
 ### Team and initial responsibilities
 
+> **TODO before submitting:** confirm the names and who took which part.
+
 | Member | Initial responsibility | Next action |
 |---|---|---|
-| [Name] | Coordination and README | Keep decisions, questions and the milestone commit together |
+| Fabian Eppenberger | Coordination, repository and README | Keep decisions, questions and the milestone commit together |
 | [Name] | Users and workflow | Describe needs and the steps of one workflow |
 | [Name] | Sketches and interaction | Sketch the screens and feedback for that workflow |
 | [Name] | Data and API exploration | Prepare sample JSON and clarify the proposed operations |
 
-These are suggested starting responsibilities, not permanent silos. Discuss and review each other's work; everyone should understand the draft. Adjust or rotate responsibilities as needed.
+These are starting responsibilities, not permanent silos. The workflows, sketches and prototype were reviewed together and everyone can walk through the draft.
 
 ## 1. Analysis
 
 ### Scenario, users and goals
 
-- Situation or problem: [Who experiences what difficulty?]
-- Intended users: [Roles and needs]
-- Proposed benefit: [What should improve?]
-- Initial scope: [One workflow to explore first; what can wait?]
+- **Situation or problem:** the service desk and the yard do not share a live view of a rental. Requests are passed on informally, so cars are prepared in the wrong order, and nobody at the desk can answer "is my car ready?" without walking into the yard.
+- **Intended users:** *Marco*, service desk — needs to record a rental quickly and see which cars are ready to hand over. *Luca*, yard — needs to know which car to fetch next and where it is parked. *Nina*, customer — wants to know when her car is ready without queuing at the desk.
+- **Proposed benefit:** one status per rental, visible to all three roles at the same time. Fewer wrong cars fetched, no repeated questions at the desk, and a customer who can wait comfortably instead of standing in line.
+- **Initial scope:** one rental holds one customer and one car. The first workflow to explore is creating a rental, because the other two depend on the data it produces.
 
 ### User stories and first workflow
 
-Describe the benefit as well as the action: “As a [role], I want to [action], so that [benefit].” For example, serving staff want to record table and item quantities so that the bartender receives a clear order. Identify what is outside the initial scope.
+- As a **service-desk employee**, I want to create a rental with a car that is actually free, so that the yard receives a complete and correct request.
+- As a **yard worker**, I want to see which cars are requested and where they are parked, so that I fetch the right car next without searching the yard.
+- As a **customer**, I want to check whether my car is ready, so that I do not have to ask at the desk.
+
+**Out of scope for now:** changing or cancelling a rental after submitting, returns and mileage, payment and insurance, damage reporting, and any customer self-service booking.
+
+#### Workflow 1 — Marco creates a rental (the first workflow)
 
 | Step | User / role | Action | Information needed | Expected result or feedback |
 |---|---|---|---|---|
-| 1 | [Role] | [Action] | [Input] | [Outcome] |
+| 1 | Marco, service desk | Enter the customer's name and licence number | Customer name, licence number | Inputs are kept ready; nothing is saved yet |
+| 2 | Marco | Choose pickup date, return date and car category | Pickup date, return date, category | Only cars free in that category for that period are listed |
+| 3 | Marco | Select a car and submit | Selected car | All fields filled, return date after pickup date, car still free |
+| 4 · success | Marco | Read the confirmation | — | Rental number and plate are shown; the rental enters the yard queue as *Requested* |
+| 3a · alternative | Marco | Submit with the licence number missing | — | "Enter the licence number" next to the field; other inputs kept; no rental created |
+| 2a · alternative | Marco | No car is free in the chosen category | — | The app says so and lists free cars from other categories |
 
-Include a question or exception worth discussing, such as an unavailable menu item. This builds on exercise 1 from the design class.
+#### Workflow 2 — Luca brings the car
+
+| Step | User / role | Action | Information needed | Expected result or feedback |
+|---|---|---|---|---|
+| 1 | Luca, yard | Open the yard queue | — | Requested rentals, earliest pickup first, with plate, parking spot and customer name |
+| 2 | Luca | Choose the next rental | Rental number | Car details and where the car is parked |
+| 3 · success | Luca | Bring the car to the front and mark it *Ready* | — | Status updates so Marco and Nina see the car is waiting; the rental leaves the queue |
+| 1a · alternative | Luca | Open an empty queue | — | "No cars are requested right now" |
+
+#### Workflow 3 — Nina checks her status
+
+| Step | User / role | Action | Information needed | Expected result or feedback |
+|---|---|---|---|---|
+| 1 | Nina, customer | Open the status page and enter her rental number | Rental number | Hint below the field explains where to find the number |
+| 2 | Nina | Submit the rental number | — | The number is checked against existing rentals |
+| 3 · success | Nina | Read the status | — | Car, plate and status; when *Ready*, told to go to the pickup area |
+| 2a · alternative | Nina | Submit a wrong rental number | — | "Rental number not found, check your confirmation"; input kept for correction |
+
+**Exception worth discussing:** the "no car free in this category" case. We show free cars from other categories instead of an empty list, but it is open whether Marco may simply book across categories at the same price, or whether that needs a supervisor's approval. See the open questions in section 3.
 
 ## 2. Design
 
 ### Screens and navigation
 
-Link or embed your sketches for the workflow (paper photos, draw.io or another tool). Explain the main inputs, actions and feedback. This builds on exercise 2. A polished or clickable prototype is not required; add one if you already have it.
+- **Sketches (draw.io):** [`docs/sketches/car-rental-sketches.drawio`](docs/sketches/car-rental-sketches.drawio) — four pages: shared identity and navigation, then one page per workflow with its alternative states. The earlier iteration is kept as [`car-rental-sketches-first-version.drawio`](docs/sketches/car-rental-sketches-first-version.drawio) so the change is visible.
+- **Clickable prototype (exercise 3):** [`docs/prototype/index.html`](docs/prototype/index.html) — 19 static screens built with Bootstrap Studio. Buttons lead to the next screen; nothing is saved. Start at `index.html` and follow the suggested journey: Marco creates R-104 → Luca marks the car ready → Nina checks her phone → Marco marks it handed over.
+
+**Navigation.** Staff work on a tablet with four top-level entries: Home, New rental, Overview, Yard queue. The customer page is a phone screen with no navigation at all — Nina only ever sees the check form and her own status, reached from a link on her confirmation.
+
+**Main inputs, actions and feedback.** The staff app has exactly three actions that change data: *Create rental*, *Mark ready*, *Mark handed over*. Each one leads to a confirmation screen that restates what happened and names the next person in the chain ("Sent to the yard queue. Luca brings the car to the front."), because the three roles never see each other's screens. Errors appear next to the field that caused them and keep the other inputs. Status is shown as a coloured badge throughout — grey *Requested*, green *Ready*, grey *Handed over* — so the same rental reads the same way on every screen.
 
 ### Domain concepts and example data
 
-Link your sample JSON files for relevant things in the workflow. Use fictional data. Explain important fields, value types and references between objects; mark uncertainties. The bar catalogue and order examples are available as a starting point. There is no new fixed entity quota for this draft.
+Three things: **cars**, **customers** and **rentals**. A rental references one car and one customer.
+
+- [`data/examples/cars.json`](data/examples/cars.json) — 5 cars
+- [`data/examples/customers.json`](data/examples/customers.json) — 4 customers
+- [`data/examples/rentals.json`](data/examples/rentals.json) — 4 rentals
+
+All values are fictional. The files are consistent with each other and with the prototype screens: `rentals.json` references `car_id` from `cars.json` and `customer_id` from `customers.json`.
+
+**Important fields and value types**
+
+| Object | Field | Type | Note |
+|---|---|---|---|
+| car | `car_id` | integer | Internal identifier, never shown to users |
+| car | `plate` | string | What staff and customers actually recognise, e.g. `"AG 123 456"` |
+| car | `category` | string, one of `compact` / `suv` / `estate` | Marco filters by this |
+| car | `parking_spot` | string | Where the car stands in the yard, e.g. `"B12"`; Luca needs it |
+| customer | `licence_number` | string | Required; kept as text because of country prefixes like `"CH 1234567"` |
+| rental | `rental_number` | string | Human-readable, e.g. `"R-104"`; spoken aloud and typed by the customer |
+| rental | `pickup_date`, `return_date` | string, ISO 8601 date | Stored as `2026-09-24`, shown as `24.09.2026` |
+| rental | `pickup_time` | string, `HH:MM` | Sorts the yard queue |
+| rental | `status` | string, one of `requested` / `ready` / `handed_over` | The one value all three roles share |
+
+**Marked uncertainties**
+
+- Cars deliberately have **no `available` flag**. Availability is derived from rentals whose period overlaps the requested one — otherwise two sources could disagree. In the example data, `R-103` holds the only SUV from 23 to 28 September, which is exactly why Marco's "No SUV is free for these dates" screen is correct for a 24–27 September request.
+- `pickup_date` and `pickup_time` are separate fields. One combined timestamp may be cleaner; we kept them apart because the sketches show a date picker and a queue sorted by time of day.
+- `parking_spot` sits on the car, not on the rental. Once Luca moves the car to the pickup area the stored spot is stale. Whether the pickup area is just another spot value is open.
+- `rental_number` is currently the only identifier for a rental. Whether it also needs an internal numeric id is open.
+- The customer sees **"Being prepared"** while the stored status is still `requested`. The display label and the stored value are intentionally not the same, because "Requested" means little to a customer.
 
 ### Business rules and possible operations
 
-Describe a rule and an exception in plain language. Example: order quantities must be positive; discuss what happens when an item is unavailable. Later, explain where the implementation enforces the rule.
+**Rules**
+
+1. Customer name and licence number are required; without them no rental is created.
+2. The return date must be after the pickup date.
+3. Only cars free for the whole period may be selected. If the chosen category has none free, free cars from other categories are offered instead of an empty list.
+4. A new rental always starts as `requested` and appears in the yard queue.
+5. A rental leaves the yard queue when it is marked `ready`.
+6. Only a rental with status `ready` can be marked `handed_over`.
+7. One customer and one car per rental in the first version; no editing or cancelling after submitting.
+
+**Rule and exception in plain language.** A car may only be rented to one customer at a time, so a car whose rental overlaps the requested dates is not offered. The exception is the category: when nothing in the requested category is free, the app does not refuse the rental — it shows what *is* free elsewhere and lets Marco decide. Where this is enforced in the implementation will be documented at Milestone 2.
+
+**Proposed operations** (draft intentions, not implemented endpoints)
 
 | User goal | Proposed action | Example input | Expected output | Open question |
 |---|---|---|---|---|
-| [Goal] | [Read / create / change / remove something] | [Data needed] | [Result] | [What needs clarification?] |
+| See which cars Marco may pick | Read the free cars for a period and category | `category=compact`, `2026-09-24` to `2026-09-27` | List of free cars with plate and category | Should a full category return other categories, or should the caller ask again? |
+| Create a rental | Create a rental | `{"customer_name": "Nina Keller", "licence_number": "CH 1234567", "car_id": 1, "pickup_date": "2026-09-24", "return_date": "2026-09-27", "pickup_time": "09:00"}` | Rental number, plate and status `requested` | Should an existing customer be reused instead of created again? |
+| Fetch the next car | Read all rentals with status `requested`, sorted by pickup time | — | Rental number, plate, parking spot, customer name | Only today's, or all future ones? |
+| See where one car is parked | Read one rental | `R-104` | Car, parking spot, customer, pickup time, status | — |
+| Report the car as ready | Change a rental's status to `ready` | `R-104` | Updated status, visible to all three roles | What if Luca marks the wrong rental ready? |
+| See today's rentals at the desk | Read today's rentals sorted by pickup time | `2026-09-24` | Rental number, time, customer, car, status | — |
+| Hand over the keys | Change a rental's status to `handed_over` | `R-104` | Updated status | Reject when the rental is not yet `ready`? |
+| Let the customer check her rental | Read the public status of one rental | `R-104` | Car, plate, dates and a customer-friendly status | Is the rental number alone enough to identify her? |
 
-Use plain language; final endpoints and implementation can follow after coaching. These are draft ideas, not a complete CRUD implementation.
+The final endpoint shapes follow after coaching; this table records the intended behaviour.
 
 ### Inspiration from existing apps or APIs — optional
 
-If useful for your design, link an existing app, website or API and add one or two sentences about what you would adopt or improve for your users. No separate research report or external API integration is required for this milestone.
+Parcel-tracking pages (for example Swiss Post) show one shipment reduced to a single status plus a short sentence on what happens next, with no login. Nina's status page copies that idea: one number in, one status and one instruction out. What we would improve is honesty about time — a tracking page often shows a stale status without saying when it was last updated, so we added an explicit *Refresh status* button rather than implying the page is live.
 
 ## 3. Project management
 
@@ -70,37 +155,36 @@ If useful for your design, link an existing app, website or API and add one or t
 
 | Question / decision | Current position | Next step / person |
 |---|---|---|
-| [Question] | [Draft answer or undecided] | [Action] |
+| How does Marco handle a returning customer? | Undecided. He currently retypes name and licence for every rental, which duplicates customer records | Ask in coaching whether to search existing customers in version 1 |
+| Can anyone who guesses a rental number see a stranger's rental? | Open and the most important gap we found. Rental numbers are sequential and easy to guess | Discuss requiring the last name alongside the rental number |
+| What if Marco picks the wrong car after submitting? | No editing in version 1 | Confirm this is acceptable for the milestone, then plan a correction path |
+| What if the car is damaged or not at its spot? | Out of scope for version 1; Luca tells Marco directly | Revisit when the three workflows are implemented |
+| May Marco book across categories when one is full? | The app offers free cars from other categories; whether that is allowed and at which price is open | Ask the lecturer / treat as a business decision |
+| In which order does Luca work the queue? | **Decided:** by pickup time, earliest first | Done |
+| Where does Marco see which cars are ready? | **Decided:** the Overview screen, which also carries the hand-over action | Done |
+| What does the customer see while the car is being fetched? | **Decided:** "Being prepared" with a Refresh button; the stored status stays `requested` | Done |
+| Does a rental ever hold more than one car? | **Decided:** one car and one customer per rental in version 1 | Done |
 
 ### Milestone progress
 
 | Milestone | Available evidence | Status / next step |
 |---|---|---|
-| 1 — Design draft | Analysis, workflow, sketches, example JSON and proposed operations | [Links and open questions] |
-| 2 — Contract and available implementation | OpenAPI contract and implemented/tested progress | [Update later] |
-| Integration — later | Revised feature scope, frontend decision, architecture and a connected workflow | [Update after classroom examples; details in Moodle] |
+| 1 — Design draft | Three workflows with alternatives ([`docs/exercise1-workflows.docx`](docs/exercise1-workflows.docx)), sketches for all three plus shared navigation ([`docs/sketches/`](docs/sketches/)), a 19-screen clickable prototype ([`docs/prototype/index.html`](docs/prototype/index.html)), consistent example JSON ([`data/examples/`](data/examples/)) and the proposed operations above | Draft complete. Open: team responsibilities table, and exporting the sketches to PNG so they render on GitHub |
+| 2 — Contract and available implementation | — | Turn the proposed-operations table into an OpenAPI contract, then implement with FastAPI and tests |
+| Integration — later | — | Update after the classroom examples; frontend decision still open, the Bootstrap Studio prototype is a candidate starting point |
 
-Use the Moodle assignment for the complete milestones, dates and assessment criteria. Describe contributions and decisions; commit counts do not measure individual effort.
+Contributions are described per person in the responsibilities table and in the decisions above; commit counts are not a measure of individual effort.
 
 ## 4. References and acknowledgements
 
-List documentation, reused assets, libraries and other assistance relevant to your project, and explain adaptations where appropriate.
+- **draw.io / diagrams.net** — screen sketches and navigation map (`docs/sketches/`).
+- **Bootstrap Studio** with **Bootstrap 5** — the clickable prototype in `docs/prototype/`. The generated CSS was kept as exported; only content and screen states are ours.
+- **Inter** (with a system sans-serif fallback) — typeface used in the sketches and prototype.
+- **FastAPI** — the framework planned for Milestone 2, following the HS26 Python/FastAPI teaching path.
+- Course material: exercise 1 (workflow tables), exercise 2 (sketches) and exercise 3 (clickable prototype) from the design sessions. The bar-ordering scenario used in class was replaced with our own car-rental scenario; we kept its structure of a workflow table with numbered alternatives.
+- Template lineage: the earlier [Pizzeria Reference Project](https://github.com/FHNW-INT/Pizzeria_Reference_Project) organised documentation around analysis, design, implementation, execution and project management. This README follows the HS26 template that updates that structure; the Pizzeria project's Java/Spring and hosted Budibase instructions do not apply here.
 
-Template lineage: the earlier [Pizzeria Reference Project](https://github.com/FHNW-INT/Pizzeria_Reference_Project) organised documentation around analysis, design, implementation, execution and project management. This template updates that structure for the HS26 Python/FastAPI teaching path; its Java/Spring and hosted Budibase setup instructions do not apply here.
-
-## Worked example — adapt, do not submit unchanged
-
-From the design-class workflow and sketch exercises:
-
-- **Need:** serving staff want to record orders without losing items or quantities.
-- **Workflow:** select table and items → review quantities → submit → see confirmation. Bar staff can then read the pending order.
-- **Sketches:** order form, review/confirmation and pending-orders view. Link your own sketches; paper is sufficient.
-- **Data (exercise 1c):** `{"table": 3, "items": [{"menu_item_id": 1, "quantity": 2}]}`. `menu_item_id` refers to an item in the sample catalogue.
-- **Proposed operation:** create an order; expected result: an identifier and confirmation. This describes intended behaviour, not an implemented endpoint.
-- **API observation:** if you sent the Echo request, record that it repeated the JSON; it did not create an order or enforce quantity rules. If you only read the example, say so.
-- **Open question:** how should the app respond when a selected item is unavailable?
-
-For exercise 2, an alternative observation is that weather providers expose different structures, units and time intervals. Record the evidence you actually inspected and why it matters. Your project need not integrate a weather API.
+No credentials or personal data are stored in this repository; all names, licence numbers and plates in the example data are invented.
 
 ## Friday handoff checklist
 
@@ -108,7 +192,5 @@ For exercise 2, an alternative observation is that weather providers expose diff
 - First join the module's MS Team using the link in Moodle. The lecturer will then add you to your group's private channel during the week.
 - Submit the GitHub repository link in Moodle by Friday, following the milestone instructions published after class.
 - Ensure the lecturer can access the repository; public visibility is not required.
-- If you do not yet have a group channel and your team composition is not recorded in Moodle's team formation activity, email the lecturer with all team members' names. If the composition is already recorded, join the Team so you can be added to the channel. Contact the lecturer if the channel is still unavailable before the deadline.
+- If you do not yet have a group channel and your team composition is not recorded in Moodle's team formation activity, email the lecturer with all team members' names.
 - Refer to Moodle for the milestone date and the full assignment requirements.
-
-Keep credentials and personal data out of the repository. The draft and its progress are useful evidence for project management; commit counts or lines of code are not measures of individual contribution.

@@ -1,0 +1,7 @@
+[
+  { "car_id": 1, "make": "VW",     "model": "Golf",    "plate": "AG 123 456", "category": "compact", "parking_spot": "B12" },
+  { "car_id": 2, "make": "Toyota", "model": "Yaris",   "plate": "AG 789 012", "category": "compact", "parking_spot": "C03" },
+  { "car_id": 3, "make": "Skoda",  "model": "Octavia", "plate": "AG 555 210", "category": "estate",  "parking_spot": "A07" },
+  { "car_id": 4, "make": "Skoda",  "model": "Fabia",   "plate": "AG 300 118", "category": "compact", "parking_spot": "B04" },
+  { "car_id": 5, "make": "Ford",   "model": "Kuga",    "plate": "AG 640 771", "category": "suv",     "parking_spot": "D01" }
+]

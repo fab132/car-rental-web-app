@@ -1,0 +1,6 @@
+[
+  { "customer_id": 1, "name": "Nina Keller", "licence_number": "CH 1234567" },
+  { "customer_id": 2, "name": "Tom Meier",   "licence_number": "CH 7654321" },
+  { "customer_id": 3, "name": "Anna Frey",   "licence_number": "CH 4481920" },
+  { "customer_id": 4, "name": "Reto Suter",  "licence_number": "CH 2093845" }
+]
