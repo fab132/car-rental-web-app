@@ -14,16 +14,12 @@ This web application replaces those notes with one shared status per rental. The
 
 ### Team and initial responsibilities
 
-> **TODO before submitting:** confirm the names and who took which part.
-
 | Member | Initial responsibility | Next action |
 |---|---|---|
-| Fabian Eppenberger | Coordination, repository and README | Keep decisions, questions and the milestone commit together |
-| [Name] | Users and workflow | Describe needs and the steps of one workflow |
-| [Name] | Sketches and interaction | Sketch the screens and feedback for that workflow |
-| [Name] | Data and API exploration | Prepare sample JSON and clarify the proposed operations |
+| Fabian | Repository, README and data model | Keep the decisions, open questions and milestone commits together; maintain the example JSON |
+| Samson | Workflows, sketches and prototype | Keep the workflow tables current; refine the sketches and the clickable prototype |
 
-These are starting responsibilities, not permanent silos. The workflows, sketches and prototype were reviewed together and everyone can walk through the draft.
+The project is a two-person team, so the template's four suggested roles are shared between us rather than split further. Both of us reviewed every workflow, sketch and decision together — the table records who drove each part, not who understands it. Responsibilities rotate as the project moves from design to implementation: for Milestone 2 the split will follow the contract (Fabian) and the FastAPI implementation with tests (Samson).
 
 ## 1. Analysis
 
@@ -169,7 +165,7 @@ Parcel-tracking pages (for example Swiss Post) show one shipment reduced to a si
 
 | Milestone | Available evidence | Status / next step |
 |---|---|---|
-| 1 — Design draft | Three workflows with alternatives ([`docs/exercise1-workflows.docx`](docs/exercise1-workflows.docx)), sketches for all three plus shared navigation ([`docs/sketches/`](docs/sketches/)), a 19-screen clickable prototype ([`docs/prototype/index.html`](docs/prototype/index.html)), consistent example JSON ([`data/examples/`](data/examples/)) and the proposed operations above | Draft complete. Open: team responsibilities table, and exporting the sketches to PNG so they render on GitHub |
+| 1 — Design draft | Three workflows with alternatives ([`docs/exercise1-workflows.docx`](docs/exercise1-workflows.docx)), sketches for all three plus shared navigation ([`docs/sketches/`](docs/sketches/)), a 19-screen clickable prototype ([`docs/prototype/index.html`](docs/prototype/index.html)), consistent example JSON ([`data/examples/`](data/examples/)) and the proposed operations above | Draft complete. Open: export the sketches to PNG so they render on GitHub without downloading |
 | 2 — Contract and available implementation | — | Turn the proposed-operations table into an OpenAPI contract, then implement with FastAPI and tests |
 | Integration — later | — | Update after the classroom examples; frontend decision still open, the Bootstrap Studio prototype is a candidate starting point |
 
