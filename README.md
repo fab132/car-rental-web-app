@@ -73,6 +73,8 @@ The project is a two-person team, so the template's four suggested roles are sha
 
 ### Screens and navigation
 
+**Live project site:** <https://fab132.github.io/car-rental-web-app/> — the clickable prototype and the sketches, served from the `docs/` folder of this repository.
+
 The sketches cover the shared layout plus one page per workflow, each with its alternative states. Click an image to open it full size — the pages are wide, because every state of a workflow is drawn side by side.
 
 **Shared identity and navigation**
@@ -103,7 +105,7 @@ Each sketch page carries two notes in its lower half — *Missing details we fou
 
 **Sources and earlier iteration.** The editable originals are [`docs/sketches/car-rental-sketches.drawio`](docs/sketches/car-rental-sketches.drawio). Our first iteration is kept alongside them in [`docs/sketches/first-version/`](docs/sketches/first-version/) with its source file, so the change is visible: it had no shared identity page and no Overview screen, and both were added once we noticed Marco had nowhere to see which cars were ready.
 
-**Clickable prototype (exercise 3).** [`docs/prototype/index.html`](docs/prototype/index.html) — 19 static screens built with Bootstrap Studio. Buttons lead to the next screen; nothing is saved. Start at `index.html` and follow the suggested journey: Marco creates R-104 → Luca marks the car ready → Nina checks her phone → Marco marks it handed over.
+**Clickable prototype (exercise 3).** **[Open the prototype](https://fab132.github.io/car-rental-web-app/prototype/)** — 16 static screens plus a start page, built with Bootstrap Studio and published with GitHub Pages, so no download is needed. The source is in [`docs/prototype/`](docs/prototype/). Buttons lead to the next screen; nothing is saved. Follow the suggested journey: Marco creates R-104 → Luca marks the car ready → Nina checks her phone → Marco marks it handed over.
 
 **Navigation.** Staff work on a tablet with four top-level entries: Home, New rental, Overview, Yard queue. The customer page is a phone screen with no navigation at all — Nina only ever sees the check form and her own status, reached from a link on her confirmation.
 
@@ -194,7 +196,7 @@ Parcel-tracking pages (for example Swiss Post) show one shipment reduced to a si
 
 | Milestone | Available evidence | Status / next step |
 |---|---|---|
-| 1 — Design draft | Three workflows with alternatives ([`docs/exercise1-workflows.docx`](docs/exercise1-workflows.docx)), sketches for all three plus shared navigation, embedded as images in section 2 ([`docs/sketches/`](docs/sketches/)), a 19-screen clickable prototype ([`docs/prototype/index.html`](docs/prototype/index.html)), consistent example JSON ([`data/examples/`](data/examples/)) and the proposed operations above | Complete and ready for submission |
+| 1 — Design draft | Three workflows with alternatives ([`docs/exercise1-workflows.docx`](docs/exercise1-workflows.docx)), sketches for all three plus shared navigation, embedded as images in section 2 ([`docs/sketches/`](docs/sketches/)), a 17-page clickable prototype, [published live](https://fab132.github.io/car-rental-web-app/prototype/) ([`docs/prototype/`](docs/prototype/)), consistent example JSON ([`data/examples/`](data/examples/)) and the proposed operations above | Complete and ready for submission |
 | 2 — Contract and available implementation | — | Turn the proposed-operations table into an OpenAPI contract, then implement with FastAPI and tests |
 | Integration — later | — | Update after the classroom examples; frontend decision still open, the Bootstrap Studio prototype is a candidate starting point |
 
@@ -203,7 +205,7 @@ Contributions are described per person in the responsibilities table and in the 
 ## 4. References and acknowledgements
 
 - **draw.io / diagrams.net** — screen sketches and navigation map (`docs/sketches/`).
-- **Bootstrap Studio** with **Bootstrap 5** — the clickable prototype in `docs/prototype/`. The generated CSS was kept as exported; only content and screen states are ours.
+- **Bootstrap Studio** with **Bootstrap 5** — the clickable prototype in `docs/prototype/`, published with **GitHub Pages** from the `docs/` folder. The generated CSS was kept as exported; only content and screen states are ours.
 - **Inter** (with a system sans-serif fallback) — typeface used in the sketches and prototype.
 - **FastAPI** — the framework planned for Milestone 2, following the HS26 Python/FastAPI teaching path.
 - Course material: exercise 1 (workflow tables), exercise 2 (sketches) and exercise 3 (clickable prototype) from the design sessions. The bar-ordering scenario used in class was replaced with our own car-rental scenario; we kept its structure of a workflow table with numbered alternatives.
