@@ -121,6 +121,8 @@ Three things: **cars**, **customers** and **rentals**. A rental references one c
 
 All values are fictional. The files are consistent with each other and with the prototype screens: `rentals.json` references `car_id` from `cars.json` and `customer_id` from `customers.json`.
 
+The example data is a snapshot of the Overview screen on 24 September, after Luca has marked R-104 ready: R-101 is handed over, R-104 is ready and R-105 is still requested. The prototype journey starts one step earlier, when Marco creates R-104 and its status is still `requested`. R-102 is not part of the sample, so the rental numbers are not continuous.
+
 **Important fields and value types**
 
 | Object | Field | Type | Note |
