@@ -1,10 +1,12 @@
 """Presentation layer for cars: HTTP in, service call, HTTP out."""
 
-from fastapi import APIRouter, Depends, status
+from datetime import date
 
-from app.dependencies import get_car_service
-from app.models import Car, CarIn
-from app.services import CarService
+from fastapi import APIRouter, Depends, HTTPException, status
+
+from app.dependencies import get_car_service, get_rental_service
+from app.models import Availability, Car, CarIn, Category
+from app.services import CarService, RentalService
 
 router = APIRouter(prefix="/cars", tags=["cars"])
 
@@ -14,6 +16,17 @@ ERRORS = {404: {"description": "Car not found"}, 409: {"description": "Business 
 @router.get("", response_model=list[Car])
 def list_cars(service: CarService = Depends(get_car_service)):
     return service.list()
+
+
+@router.get("/available", response_model=Availability,
+            responses={422: {"description": "Missing or invalid dates"}})
+def available_cars(pickup_date: date, return_date: date, category: Category | None = None,
+                   service: RentalService = Depends(get_rental_service)):
+    """Cars free for the whole period. If the category is full, free cars
+    from other categories are returned with other_categories = true."""
+    if return_date <= pickup_date:
+        raise HTTPException(status_code=422, detail="return_date must be after pickup_date")
+    return service.available(pickup_date, return_date, category)
 
 
 @router.get("/{car_id}", response_model=Car, responses={404: ERRORS[404]})

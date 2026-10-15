@@ -9,7 +9,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from app.errors import ConflictError, NotFoundError
-from app.routers import cars, customers
+from app.routers import cars, customers, rentals
 
 app = FastAPI(
     title="CityCar Rental API",
@@ -30,6 +30,7 @@ def conflict(_: Request, exc: ConflictError) -> JSONResponse:
 
 app.include_router(cars.router)
 app.include_router(customers.router)
+app.include_router(rentals.router)
 
 
 @app.get("/health", tags=["meta"])

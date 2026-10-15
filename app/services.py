@@ -5,13 +5,37 @@ Every rule from README section 2 "Business rules" that the API enforces
 lives here, so there is exactly one place to read and test them.
 """
 
+from datetime import date
+
 from app.errors import ConflictError, NotFoundError
-from app.models import Car, CarIn, Customer, CustomerIn
+from app.models import (Availability, Car, CarIn, Category, Customer, CustomerIn,
+                        Rental, RentalIn, RentalUpdate)
 from app.repository import JsonRepository
 
 
 def _next_int(field: str):
     return lambda records: max((r[field] for r in records), default=0) + 1
+
+
+def _next_rental_number(records: list[dict]) -> str:
+    # Rental numbers continue from the highest existing one: R-105 -> R-106.
+    highest = max((int(r["rental_number"].split("-")[1]) for r in records), default=100)
+    return f"R-{highest + 1}"
+
+
+def periods_overlap(a_start: date, a_end: date, b_start: date, b_end: date) -> bool:
+    # A car returned on a day can be picked up again that same day.
+    return a_start < b_end and b_start < a_end
+
+
+# Allowed status changes. Forward along the workflow, plus ready -> requested
+# so a car marked ready by mistake can go back into the yard queue.
+# A handed-over rental is final in version 1.
+ALLOWED_STATUS_CHANGES = {
+    "requested": {"requested", "ready"},
+    "ready": {"ready", "requested", "handed_over"},
+    "handed_over": {"handed_over"},
+}
 
 
 class CarService:
@@ -90,3 +114,88 @@ class CustomerService:
         if used_by:
             raise ConflictError(f"Customer {customer_id} has rentals {', '.join(used_by)}")
         self.customers.delete(customer_id)
+
+
+class RentalService:
+    def __init__(self, rentals: JsonRepository, cars: JsonRepository, customers: JsonRepository):
+        self.rentals = rentals
+        self.cars = cars
+        self.customers = customers
+
+    def list(self, status: str | None = None) -> list[Rental]:
+        records = self.rentals.all()
+        if status is not None:
+            records = [r for r in records if r["status"] == status]
+        # Earliest pickup first: the order Luca works the yard queue in.
+        records.sort(key=lambda r: (r["pickup_date"], r["pickup_time"]))
+        return [Rental(**r) for r in records]
+
+    def get(self, rental_number: str) -> Rental:
+        record = self.rentals.get(rental_number.upper())
+        if record is None:
+            raise NotFoundError(f"Rental {rental_number} not found")
+        return Rental(**record)
+
+    # ----- rules -----
+
+    def _check_references(self, data: RentalIn) -> None:
+        if self.customers.get(data.customer_id) is None:
+            raise NotFoundError(f"Customer {data.customer_id} not found")
+        if self.cars.get(data.car_id) is None:
+            raise NotFoundError(f"Car {data.car_id} not found")
+
+    def _blocking_rental(self, car_id: int, start: date, end: date,
+                         ignore: str | None = None) -> str | None:
+        for r in self.rentals.all():
+            if r["car_id"] != car_id or r["rental_number"] == ignore:
+                continue
+            if periods_overlap(start, end, date.fromisoformat(r["pickup_date"]),
+                               date.fromisoformat(r["return_date"])):
+                return r["rental_number"]
+        return None
+
+    def _check_car_free(self, data: RentalIn, ignore: str | None = None) -> None:
+        # Rule 3: a car is rented to one customer at a time.
+        blocking = self._blocking_rental(data.car_id, data.pickup_date, data.return_date, ignore)
+        if blocking:
+            raise ConflictError(
+                f"Car {data.car_id} is already rented in this period (rental {blocking})"
+            )
+
+    # ----- queries -----
+
+    def available(self, pickup_date: date, return_date: date,
+                  category: Category | None = None) -> Availability:
+        free = [Car(**c) for c in self.cars.all()
+                if not self._blocking_rental(c["car_id"], pickup_date, return_date)]
+        in_category = [c for c in free if category is None or c.category == category]
+        other = bool(category) and not in_category
+        return Availability(pickup_date=pickup_date, return_date=return_date, category=category,
+                            other_categories=other, cars=free if other else in_category)
+
+    # ----- commands -----
+
+    def create(self, data: RentalIn) -> Rental:
+        self._check_references(data)
+        self._check_car_free(data)
+        # Rule 4: a new rental always starts as requested.
+        record = {**data.model_dump(mode="json"), "status": "requested"}
+        return Rental(**self.rentals.add(record, _next_rental_number))
+
+    def update(self, rental_number: str, data: RentalUpdate) -> Rental:
+        current = self.get(rental_number)
+        if current.status == "handed_over":
+            raise ConflictError(f"Rental {current.rental_number} is handed over and cannot change")
+        if data.status not in ALLOWED_STATUS_CHANGES[current.status]:
+            # Rule 6: only a ready rental can be handed over.
+            raise ConflictError(
+                f"Status cannot change from {current.status} to {data.status}"
+            )
+        self._check_references(data)
+        self._check_car_free(data, ignore=current.rental_number)
+        record = {"rental_number": current.rental_number, **data.model_dump(mode="json")}
+        return Rental(**self.rentals.replace(current.rental_number, record))
+
+    def delete(self, rental_number: str) -> None:
+        current = self.get(rental_number)
+        self.rentals.delete(current.rental_number)

@@ -67,3 +67,14 @@ class RentalUpdate(RentalIn):
 
 class Rental(RentalUpdate):
     rental_number: str
+
+
+class Availability(BaseModel):
+    """Free cars for a period. When the requested category is full,
+    other_categories is true and cars lists what is free elsewhere (rule 3)."""
+
+    pickup_date: date
+    return_date: date
+    category: Category | None
+    other_categories: bool
+    cars: list[Car]

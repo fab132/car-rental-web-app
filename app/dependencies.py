@@ -10,7 +10,7 @@ from pathlib import Path
 from fastapi import Depends
 
 from app.repository import JsonRepository
-from app.services import CarService, CustomerService
+from app.services import CarService, CustomerService, RentalService
 from app.settings import data_dir
 
 
@@ -42,3 +42,11 @@ def get_customer_service(
     rentals: JsonRepository = Depends(get_rental_repo),
 ) -> CustomerService:
     return CustomerService(customers, rentals)
+
+
+def get_rental_service(
+    rentals: JsonRepository = Depends(get_rental_repo),
+    cars: JsonRepository = Depends(get_car_repo),
+    customers: JsonRepository = Depends(get_customer_repo),
+) -> RentalService:
+    return RentalService(rentals, cars, customers)
