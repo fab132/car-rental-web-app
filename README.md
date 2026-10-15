@@ -1,6 +1,6 @@
 # CityCar Rental — car-rental-web-app
 
-**Current stage:** Milestone 1 — design draft. This README is the living project document; milestones are added to it rather than to separate files.
+**Current stage:** Milestone 2: admin API implemented with JSON storage and tests. This README is the living project document; milestones are added to it rather than to separate files.
 
 ## Project overview
 
@@ -157,7 +157,7 @@ The example data is a snapshot of the Overview screen on 24 September, after Luc
 6. Only a rental with status `ready` can be marked `handed_over`.
 7. One customer and one car per rental in the first version; no editing or cancelling after submitting.
 
-**Rule and exception in plain language.** A car may only be rented to one customer at a time, so a car whose rental overlaps the requested dates is not offered. The exception is the category: when nothing in the requested category is free, the app does not refuse the rental — it shows what *is* free elsewhere and lets Marco decide. Where this is enforced in the implementation will be documented at Milestone 2.
+**Rule and exception in plain language.** A car may only be rented to one customer at a time, so a car whose rental overlaps the requested dates is not offered. The exception is the category: when nothing in the requested category is free, the app does not refuse the rental — it shows what *is* free elsewhere and lets Marco decide. In the implementation the rule lives in the service layer (`RentalService._check_car_free` in [`app/services.py`](app/services.py)); see *Implementation* below.
 
 **Proposed operations** (draft intentions, not implemented endpoints)
 
@@ -178,17 +178,83 @@ The final endpoint shapes follow after coaching; this table records the intended
 
 Parcel-tracking pages (for example Swiss Post) show one shipment reduced to a single status plus a short sentence on what happens next, with no login. Nina's status page copies that idea: one number in, one status and one instruction out. What we would improve is honesty about time — a tracking page often shows a stale status without saying when it was last updated, so we added an explicit *Refresh status* button rather than implying the page is live.
 
+### Implementation: admin API (Milestone 2)
+
+Following the coaching feedback, the first implementation step is an admin API with full CRUD for the three domain objects, storing data in JSON files. The workflow screens come later and will call the same service layer.
+
+**Run it** (locally or in Codespaces):
+
+```bash
+pip install -r requirements.txt
+uvicorn app.main:app --reload     # API on http://127.0.0.1:8000, docs on /docs
+pytest                            # 36 tests
+```
+
+On first start the app copies `data/examples/` into `data/store/` and works on that copy, so the example data in the repository never changes. Delete `data/store/` to reset.
+
+**Layers**
+
+| Layer | Module | Responsibility |
+|---|---|---|
+| Presentation | [`app/routers/`](app/routers/) | HTTP paths, status codes, request and response models; no rules |
+| Validation | [`app/models.py`](app/models.py) | Pydantic models: field types, required fields, allowed values, return after pickup |
+| Service | [`app/services.py`](app/services.py) | Business rules that need stored data: free car, unique plate and licence, status changes, delete protection |
+| Persistence | [`app/repository.py`](app/repository.py) | Reads and writes one JSON file per resource; the only module that knows about files |
+| Wiring | [`app/dependencies.py`](app/dependencies.py) | Builds services and repositories with `Depends`; tests swap the data folder here |
+
+**Endpoints**
+
+| Method and path | Purpose | Success | Errors |
+|---|---|---|---|
+| `GET /cars` | List cars | 200 | |
+| `GET /cars/available?pickup_date&return_date&category` | Free cars for a period; other categories when the chosen one is full | 200 | 422 |
+| `GET /cars/{car_id}` | One car | 200 | 404 |
+| `POST /cars` | Add a car | 201 | 409 plate taken, 422 |
+| `PUT /cars/{car_id}` | Replace a car | 200 | 404, 409, 422 |
+| `DELETE /cars/{car_id}` | Remove a car | 204 | 404, 409 used by a rental |
+| `GET /customers` | List customers | 200 | |
+| `GET /customers/{customer_id}` | One customer | 200 | 404 |
+| `POST /customers` | Add a customer | 201 | 409 licence taken, 422 |
+| `PUT /customers/{customer_id}` | Replace a customer | 200 | 404, 409, 422 |
+| `DELETE /customers/{customer_id}` | Remove a customer | 204 | 404, 409 has rentals |
+| `GET /rentals?status=requested` | List rentals, earliest pickup first; the filter gives Luca's yard queue | 200 | 422 |
+| `GET /rentals/{rental_number}` | One rental | 200 | 404 |
+| `POST /rentals` | Create a rental; always starts as `requested` | 201 | 404 car or customer, 409 car taken, 422 |
+| `PUT /rentals/{rental_number}` | Replace a rental, including its status | 200 | 404, 409, 422 |
+| `DELETE /rentals/{rental_number}` | Remove a rental | 204 | 404 |
+
+The full contract with request and response schemas is generated by FastAPI at `/docs` and `/openapi.json`.
+
+**Status codes.** 422 means the request itself is malformed (missing licence, unknown category, return before pickup, unknown field). 409 means the request is well formed but breaks a rule that depends on stored data (car already rented, plate or licence already registered, status change not allowed). 404 means an identifier in the path or body does not exist.
+
+**Design decisions (Milestone 2)**
+
+| Decision | Reason |
+|---|---|
+| JSON files behind a repository class | The coach asked for JSON first and an ORM later. Only `app/repository.py` knows about files, so the ORM step replaces one module and the providers in `dependencies.py`; routers, rules and tests stay the same. |
+| Rules in a service layer, not in routers | One place to read and test every rule, and the later workflow screens reuse the same checks instead of copying them. |
+| Services raise domain errors; `main.py` maps them to 404 and 409 | The service layer does not depend on HTTP, which keeps it testable and reusable. |
+| Availability is computed, never stored | Same reasoning as in the data model: a stored `available` flag could disagree with the rentals. |
+| A car returned on a day can be picked up the same day | Periods overlap only if `a.pickup < b.return and b.pickup < a.return`. |
+| Status changes: `requested -> ready -> handed_over`, plus `ready -> requested` | Enforces rule 6 and gives Luca a way back when he marks the wrong rental ready (open question in section 3). A handed-over rental is final. |
+| `POST /rentals` takes `customer_id`, not name and licence | Admin CRUD works on existing customers. Creating the customer on the fly belongs to Marco's workflow endpoint later. |
+| Licence number is unique per customer | Answers the returning-customer question for now: one record per licence, reused across rentals. |
+| A missing car or customer in the request body is 404 | The referenced resource does not exist; the request shape itself is valid, so 422 would mislead. |
+| Rental numbers continue from the highest one (`R-105 -> R-106`) | Keeps the human-readable format from the design. They stay guessable; see the security question in section 3. |
+| Unknown request fields are rejected | Catches typos like `pickupdate` as 422 instead of silently dropping them. |
+| Each test gets a fresh copy of the example data | Tests never touch `data/store/` and never depend on each other's order. |
+
 ## 3. Project management
 
 ### Decisions, open questions and next steps
 
 | Question / decision | Current position | Next step / person |
 |---|---|---|
-| How does Marco handle a returning customer? | Undecided. He currently retypes name and licence for every rental, which duplicates customer records | Ask in coaching whether to search existing customers in version 1 |
+| How does Marco handle a returning customer? | **Decided for the API:** the licence number is unique, so one customer record is reused across rentals. The workflow screen still needs a customer search | Add a customer lookup when Marco's workflow is implemented |
 | Can anyone who guesses a rental number see a stranger's rental? | Open and the most important gap we found. Rental numbers are sequential and easy to guess | Discuss requiring the last name alongside the rental number |
-| What if Marco picks the wrong car after submitting? | No editing in version 1 | Confirm this is acceptable for the milestone, then plan a correction path |
+| What if Marco picks the wrong car after submitting? | The admin API can correct a rental with `PUT`; Marco's own screen still has no editing in version 1 | Decide whether Marco gets a correction screen |
 | What if the car is damaged or not at its spot? | Out of scope for version 1; Luca tells Marco directly | Revisit when the three workflows are implemented |
-| May Marco book across categories when one is full? | The app offers free cars from other categories; whether that is allowed and at which price is open | Ask the lecturer / treat as a business decision |
+| May Marco book across categories when one is full? | `GET /cars/available` offers free cars from other categories; the API accepts any free car. Whether a price rule applies is open | Ask the lecturer / treat as a business decision |
 | In which order does Luca work the queue? | **Decided:** by pickup time, earliest first | Done |
 | Where does Marco see which cars are ready? | **Decided:** the Overview screen, which also carries the hand-over action | Done |
 | What does the customer see while the car is being fetched? | **Decided:** "Being prepared" with a Refresh button; the stored status stays `requested` | Done |
@@ -199,7 +265,7 @@ Parcel-tracking pages (for example Swiss Post) show one shipment reduced to a si
 | Milestone | Available evidence | Status / next step |
 |---|---|---|
 | 1 — Design draft | Three workflows with alternatives ([`docs/exercise1-workflows.docx`](docs/exercise1-workflows.docx)), sketches for all three plus shared navigation, embedded as images in section 2 ([`docs/sketches/`](docs/sketches/)), a 17-page clickable prototype, [published live](https://fab132.github.io/car-rental-web-app/prototype/) ([`docs/prototype/`](docs/prototype/)), consistent example JSON ([`data/examples/`](data/examples/)) and the proposed operations above | Complete and ready for submission |
-| 2 — Contract and available implementation | — | Turn the proposed-operations table into an OpenAPI contract, then implement with FastAPI and tests |
+| 2 — Contract and available implementation | Admin CRUD API for cars, customers and rentals with JSON storage ([`app/`](app/)), business rules in a service layer, 36 pytest tests ([`tests/`](tests/)), generated OpenAPI at `/docs` | Review the contract together; next step is moving storage to an ORM, then the workflow endpoints for Marco, Luca and Nina |
 | Integration — later | — | Update after the classroom examples; frontend decision still open, the Bootstrap Studio prototype is a candidate starting point |
 
 Contributions are described per person in the responsibilities table and in the decisions above; commit counts are not a measure of individual effort.
