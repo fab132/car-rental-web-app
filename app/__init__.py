@@ -1,0 +1,1 @@
+"""CityCar Rental backend (FastAPI)."""

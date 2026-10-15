@@ -65,3 +65,6 @@ logs/
 ._*
 Thumbs.db
 desktop.ini
+
+# Working data written by the app (seeded from data/examples/)
+data/store/
