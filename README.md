@@ -281,11 +281,3 @@ Contributions are described per person in the responsibilities table and in the 
 
 No credentials or personal data are stored in this repository; all names, licence numbers and plates in the example data are invented.
 
-## Friday handoff checklist
-
-- Commit this README and the available draft material before the milestone.
-- First join the module's MS Team using the link in Moodle. The lecturer will then add you to your group's private channel during the week.
-- Submit the GitHub repository link in Moodle by Friday, following the milestone instructions published after class.
-- Ensure the lecturer can access the repository; public visibility is not required.
-- If you do not yet have a group channel and your team composition is not recorded in Moodle's team formation activity, email the lecturer with all team members' names.
-- Refer to Moodle for the milestone date and the full assignment requirements.
