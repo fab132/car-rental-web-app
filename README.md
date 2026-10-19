@@ -192,6 +192,33 @@ pytest                            # 36 tests
 
 On first start the app copies `data/examples/` into `data/store/` and works on that copy, so the example data in the repository never changes. Delete `data/store/` to reset.
 
+**Demo steps**
+
+Open `http://127.0.0.1:8000/docs` and use the Swagger UI to walk through the following cases.
+
+1. **Create a rental — 201 success.** `POST /rentals` → Try it out → paste the body below → Execute. Expect `201` with a new rental number.
+```json
+{
+  "customer_id": 1,
+  "car_id": 2,
+  "pickup_date": "2026-10-20",
+  "return_date": "2026-10-23",
+  "pickup_time": "09:00"
+}
+```
+
+2. **Duplicate booking — 409 conflict.** Same endpoint, same body → Execute again. Expect `409` because car 2 is already booked for that period.
+
+3. **Yard queue — 200.** `GET /rentals` → Try it out → set `status` to `requested` → Execute. Expect only rentals with status `requested`, sorted by pickup time — this is Luca's yard queue.
+
+4. **Free cars lookup — 200.** `GET /cars/available` → Try it out → `pickup_date: 2026-10-20`, `return_date: 2026-10-23` → Execute. Expect all cars except car 2, which is booked for that period.
+
+5. **Invalid dates — 422.** Same endpoint → swap the dates (`pickup_date: 2026-10-23`, `return_date: 2026-10-20`) → Execute. Expect `422` because return is before pickup.
+
+6. **Not found — 404.** `GET /rentals/{rental_number}` → Try it out → `rental_number: R-999` → Execute. Expect `404`.
+
+7. **Run tests.** In the terminal: `pytest` — all 36 tests should pass.
+
 **Layers**
 
 | Layer | Module | Responsibility |
