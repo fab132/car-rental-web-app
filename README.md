@@ -12,14 +12,14 @@ This web application replaces those notes with one shared status per rental. The
 
 **Initial scope:** the three workflows below — create a rental, prepare the car, check the status. Payment, insurance options, online self-booking, returns, cleaning logs and damage reports are deliberately out of scope for the first version.
 
-### Team and initial responsibilities
+### Team and responsibilities
 
-| Member | Initial responsibility | Next action |
-|---|---|---|
-| Fabian | Repository, README and data model | Keep the decisions, open questions and milestone commits together; maintain the example JSON |
-| Samson | Workflows, sketches and prototype | Keep the workflow tables current; refine the sketches and the clickable prototype |
+| Member | Milestone 1 | Milestone 2 | Milestone 3 |
+|---|---|---|---|
+| Fabian | Repository setup, README, data model, workflows, sketches, clickable prototype, example JSON | Code review | Concurrency fix (`BEGIN IMMEDIATE`), workflow screen test suite, error-handling corrections |
+| Samson | Workflow analysis, review of sketches and example data | FastAPI project skeleton, Pydantic models, CRUD API for cars/customers/rentals, service layer with business rules, 36 API tests, SQLite migration via SQLAlchemy 2.0, README documentation | Jinja2 workflow screens for all three workflows, POST/redirect/GET flow, form error handling, README updates |
 
-The project is a two-person team, so the template's four suggested roles are shared between us rather than split further. Both of us reviewed every workflow, sketch and decision together — the table records who drove each part, not who understands it. Responsibilities rotate as the project moves from design to implementation: for Milestone 2 the split will follow the contract (Fabian) and the FastAPI implementation with tests (Samson).
+The project is a two-person team, so the template's four suggested roles are shared between us rather than split further. Both of us reviewed every workflow, sketch and decision together — the table records who drove each part, not who understands it.
 
 ## 1. Analysis
 
