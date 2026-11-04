@@ -1,8 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Rental {{ rental.rental_number }}{% endblock %}
 {% block content %}
+{% set sc = {"requested": "s-requested", "ready": "s-ready", "handed_over": "s-handed"} %}
+{% set sl = {"requested": "Requested", "ready": "Ready", "handed_over": "Handed over"} %}
 <h1>Rental {{ rental.rental_number }}</h1>
+{% if rental.status == "requested" %}
 <p class="text-muted-cc">Bring the car to the pickup area, then mark it ready.</p>
+{% else %}
+<p class="text-muted-cc">This rental is no longer in the yard queue.</p>
+{% endif %}
 
 <div class="cc-panel cc-narrow mt-3">
   <dl class="cc-facts">
@@ -17,13 +23,15 @@
     <dt>Pickup time</dt>
     <dd>{{ rental.pickup_time }}</dd>
     <dt>Status</dt>
-    <dd><span class="cc-status s-requested">Requested</span></dd>
+    <dd><span class="cc-status {{ sc[rental.status] }}">{{ sl[rental.status] }}</span></dd>
   </dl>
 
   <div class="d-flex flex-wrap gap-2">
+    {% if rental.status == "requested" %}
     <form method="post" action="/queue/{{ rental.rental_number }}/ready">
       <button type="submit" class="btn btn-cc">Mark ready</button>
     </form>
+    {% endif %}
     <a class="btn btn-cc-ghost" href="/queue">Back to queue</a>
   </div>
 </div>

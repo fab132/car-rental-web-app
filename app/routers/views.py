@@ -1,20 +1,25 @@
 """HTML view routes for the three staff workflows and the customer status page.
 
 These routes call the same service layer as the JSON API; they add no new
-business rules.  The API routes under /cars, /customers and /rentals are
-unchanged.
+business rules. They are left out of the OpenAPI schema, which documents only
+the API under /cars, /customers and /rentals.
+
+Errors from the services are shown on the page (an error banner or a form
+message) instead of the API's JSON error body.
 """
 
 from datetime import date
-from pathlib import Path
+from typing import get_args
+from urllib.parse import quote
 
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from pydantic import ValidationError
 
 from app.dependencies import get_car_service, get_customer_service, get_rental_service
 from app.errors import ConflictError, NotFoundError
-from app.models import CustomerIn, RentalIn, RentalUpdate
+from app.models import BookingIn, Category, CustomerIn, RentalStatus, RentalUpdate
 from app.services import CarService, CustomerService, RentalService
 from app.settings import TEMPLATES_DIR
 
@@ -29,24 +34,59 @@ def _fmt_date(value) -> str:
 
 templates.env.filters["fmtdate"] = _fmt_date
 
-router = APIRouter(tags=["views"])
+router = APIRouter(tags=["views"], include_in_schema=False)
+
+CATEGORIES = get_args(Category)
+
+FIELD_LABELS = {
+    "name": "Customer name",
+    "licence_number": "Licence number",
+    "pickup_time": "Pickup time",
+    "pickup_date": "Pickup date",
+    "return_date": "Return date",
+    "car_id": "Car",
+}
 
 
-# ---- helpers ----
+def _render(request: Request, name: str, context: dict) -> HTMLResponse:
+    return templates.TemplateResponse(request, name, context)
 
-def _get_or_create_customer(svc: CustomerService, name: str, licence: str) -> int:
-    """Return existing customer_id for this licence, or create a new customer."""
-    for c in svc.list():
-        if c.licence_number.casefold() == licence.casefold():
-            return c.customer_id
-    return svc.create(CustomerIn(name=name, licence_number=licence)).customer_id
+
+def _redirect(path: str, **params: str) -> RedirectResponse:
+    query = "&".join(f"{k}={quote(v)}" for k, v in params.items())
+    return RedirectResponse(f"{path}?{query}" if query else path, status_code=303)
+
+
+def _validation_message(exc: ValidationError) -> str:
+    """Turn the first Pydantic error into one sentence for the form."""
+    err = exc.errors()[0]
+    field = next((str(p) for p in reversed(err["loc"]) if str(p) in FIELD_LABELS), None)
+    message = err["msg"].removeprefix("Value error, ")
+    if err["type"] == "string_pattern_mismatch":
+        message = "use the format HH:MM, e.g. 09:00"
+    if "return_date must be after pickup_date" in message:
+        return "Return date must be after pickup date."
+    return f"{FIELD_LABELS[field]}: {message}." if field else f"{message}."
+
+
+def _change_status(rental_svc: RentalService, rental_number: str,
+                   status: RentalStatus) -> None:
+    rental = rental_svc.get(rental_number)
+    rental_svc.update(rental_number, RentalUpdate(
+        customer_id=rental.customer_id,
+        car_id=rental.car_id,
+        pickup_date=rental.pickup_date,
+        return_date=rental.return_date,
+        pickup_time=rental.pickup_time,
+        status=status,
+    ))
 
 
 # ---- home ----
 
 @router.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    return templates.TemplateResponse("home.html", {"request": request, "active": "home"})
+    return _render(request, "home.html", {"active": "home"})
 
 
 # ---- overview — Marco hands over keys ----
@@ -55,38 +95,28 @@ def home(request: Request):
 def overview(
     request: Request,
     note: str | None = None,
+    error: str | None = None,
     car_svc: CarService = Depends(get_car_service),
     customer_svc: CustomerService = Depends(get_customer_service),
     rental_svc: RentalService = Depends(get_rental_service),
 ):
-    rentals = rental_svc.list()
-    cars = {c.car_id: c for c in car_svc.list()}
-    customers = {c.customer_id: c for c in customer_svc.list()}
-    return templates.TemplateResponse("overview.html", {
-        "request": request,
-        "rentals": rentals,
-        "cars": cars,
-        "customers": customers,
+    return _render(request, "overview.html", {
+        "rentals": rental_svc.list(),
+        "cars": {c.car_id: c for c in car_svc.list()},
+        "customers": {c.customer_id: c for c in customer_svc.list()},
         "note": note,
+        "error": error,
         "active": "overview",
     })
 
 
 @router.post("/overview/{rental_number}/handover")
-def handover(
-    rental_number: str,
-    rental_svc: RentalService = Depends(get_rental_service),
-):
-    rental = rental_svc.get(rental_number)
-    rental_svc.update(rental_number, RentalUpdate(
-        customer_id=rental.customer_id,
-        car_id=rental.car_id,
-        pickup_date=rental.pickup_date,
-        return_date=rental.return_date,
-        pickup_time=rental.pickup_time,
-        status="handed_over",
-    ))
-    return RedirectResponse(f"/overview?note={rental_number} handed over", status_code=303)
+def handover(rental_number: str, rental_svc: RentalService = Depends(get_rental_service)):
+    try:
+        _change_status(rental_svc, rental_number, "handed_over")
+    except (ConflictError, NotFoundError) as exc:
+        return _redirect("/overview", error=exc.message)
+    return _redirect("/overview", note=f"{rental_number.upper()} handed over")
 
 
 # ---- yard queue — Luca fetches cars ----
@@ -95,19 +125,17 @@ def handover(
 def yard_queue(
     request: Request,
     note: str | None = None,
+    error: str | None = None,
     car_svc: CarService = Depends(get_car_service),
     customer_svc: CustomerService = Depends(get_customer_service),
     rental_svc: RentalService = Depends(get_rental_service),
 ):
-    rentals = rental_svc.list(status="requested")
-    cars = {c.car_id: c for c in car_svc.list()}
-    customers = {c.customer_id: c for c in customer_svc.list()}
-    return templates.TemplateResponse("yard_queue.html", {
-        "request": request,
-        "rentals": rentals,
-        "cars": cars,
-        "customers": customers,
+    return _render(request, "yard_queue.html", {
+        "rentals": rental_svc.list(status="requested"),
+        "cars": {c.car_id: c for c in car_svc.list()},
+        "customers": {c.customer_id: c for c in customer_svc.list()},
         "note": note,
+        "error": error,
         "active": "queue",
     })
 
@@ -122,44 +150,30 @@ def rental_detail(
 ):
     try:
         rental = rental_svc.get(rental_number)
-    except NotFoundError:
-        return RedirectResponse("/queue", status_code=303)
-    car = car_svc.get(rental.car_id)
-    customer = customer_svc.get(rental.customer_id)
-    return templates.TemplateResponse("rental_detail.html", {
-        "request": request,
+    except NotFoundError as exc:
+        return _redirect("/queue", error=exc.message)
+    return _render(request, "rental_detail.html", {
         "rental": rental,
-        "car": car,
-        "customer": customer,
+        "car": car_svc.get(rental.car_id),
+        "customer": customer_svc.get(rental.customer_id),
         "active": "queue",
     })
 
 
 @router.post("/queue/{rental_number}/ready")
-def mark_ready(
-    rental_number: str,
-    rental_svc: RentalService = Depends(get_rental_service),
-):
-    rental = rental_svc.get(rental_number)
-    rental_svc.update(rental_number, RentalUpdate(
-        customer_id=rental.customer_id,
-        car_id=rental.car_id,
-        pickup_date=rental.pickup_date,
-        return_date=rental.return_date,
-        pickup_time=rental.pickup_time,
-        status="ready",
-    ))
-    return RedirectResponse(f"/queue?note={rental_number} marked ready", status_code=303)
+def mark_ready(rental_number: str, rental_svc: RentalService = Depends(get_rental_service)):
+    try:
+        _change_status(rental_svc, rental_number, "ready")
+    except (ConflictError, NotFoundError) as exc:
+        return _redirect("/queue", error=exc.message)
+    return _redirect("/queue", note=f"{rental_number.upper()} marked ready")
 
 
 # ---- new rental — Marco creates a rental ----
 
 @router.get("/new-rental", response_class=HTMLResponse)
 def new_rental_form(request: Request):
-    return templates.TemplateResponse("new_rental.html", {
-        "request": request,
-        "active": "new-rental",
-    })
+    return _render(request, "new_rental.html", {"active": "new-rental"})
 
 
 @router.post("/new-rental", response_class=HTMLResponse)
@@ -172,13 +186,10 @@ def new_rental_post(
     pickup_time: str = Form(...),
     category: str = Form(...),
     step: str = Form("search"),
-    car_id: int = Form(None),
-    car_svc: CarService = Depends(get_car_service),
-    customer_svc: CustomerService = Depends(get_customer_service),
+    car_id: int | None = Form(None),
     rental_svc: RentalService = Depends(get_rental_service),
 ):
     ctx = {
-        "request": request,
         "active": "new-rental",
         "name": name,
         "licence_number": licence_number,
@@ -188,51 +199,41 @@ def new_rental_post(
         "category": category,
     }
 
-    # Validate dates regardless of step.
     try:
         p = date.fromisoformat(pickup_date)
         r = date.fromisoformat(return_date)
-        if r <= p:
-            return templates.TemplateResponse("new_rental.html", {
-                **ctx, "error_dates": "Return date must be after pickup date."
-            })
     except ValueError:
-        return templates.TemplateResponse("new_rental.html", {
-            **ctx, "error_dates": "Enter valid dates."
-        })
+        return _render(request, "new_rental.html", {**ctx, "error_dates": "Enter valid dates."})
+    if r <= p:
+        return _render(request, "new_rental.html", {
+            **ctx, "error_dates": "Return date must be after pickup date."})
+    if category not in CATEGORIES:
+        return _render(request, "new_rental.html", {**ctx, "error": "Choose a car category."})
 
-    if step == "search" or car_id is None:
-        # Show available cars for the chosen period and category.
+    def with_availability(extra: dict) -> HTMLResponse:
         availability = rental_svc.available(p, r, category)
-        return templates.TemplateResponse("new_rental.html", {
-            **ctx,
+        return _render(request, "new_rental.html", {
+            **ctx, **extra,
             "available_cars": availability.cars,
             "other_categories": availability.other_categories,
         })
 
-    # step == "create" with a selected car — look up or create the customer then book.
-    try:
-        cust_id = _get_or_create_customer(customer_svc, name, licence_number)
-    except ConflictError as exc:
-        return templates.TemplateResponse("new_rental.html", {**ctx, "error": exc.message})
+    if step != "create" or car_id is None:
+        return with_availability({})
 
     try:
-        rental = rental_svc.create(RentalIn(
-            customer_id=cust_id,
-            car_id=car_id,
-            pickup_date=p,
-            return_date=r,
-            pickup_time=pickup_time,
-        ))
+        booking = BookingIn(
+            customer=CustomerIn(name=name, licence_number=licence_number),
+            car_id=car_id, pickup_date=p, return_date=r, pickup_time=pickup_time,
+        )
+    except ValidationError as exc:
+        return with_availability({"error": _validation_message(exc)})
+
+    try:
+        rental = rental_svc.book(booking)
     except (ConflictError, NotFoundError) as exc:
-        # Car was just booked by someone else — show fresh availability.
-        availability = rental_svc.available(p, r, category)
-        return templates.TemplateResponse("new_rental.html", {
-            **ctx,
-            "available_cars": availability.cars,
-            "other_categories": availability.other_categories,
-            "error": exc.message,
-        })
+        # Usually the car was just booked by someone else: show fresh availability.
+        return with_availability({"error": exc.message})
 
     return RedirectResponse(f"/new-rental/done/{rental.rental_number}", status_code=303)
 
@@ -249,13 +250,10 @@ def rental_created(
         rental = rental_svc.get(rental_number)
     except NotFoundError:
         return RedirectResponse("/new-rental", status_code=303)
-    car = car_svc.get(rental.car_id)
-    customer = customer_svc.get(rental.customer_id)
-    return templates.TemplateResponse("rental_created.html", {
-        "request": request,
+    return _render(request, "rental_created.html", {
         "rental": rental,
-        "car": car,
-        "customer": customer,
+        "car": car_svc.get(rental.car_id),
+        "customer": customer_svc.get(rental.customer_id),
         "active": "new-rental",
     })
 
@@ -264,12 +262,12 @@ def rental_created(
 
 @router.get("/status", response_class=HTMLResponse)
 def status_form(request: Request):
-    return templates.TemplateResponse("status.html", {"request": request})
+    return _render(request, "status.html", {})
 
 
 @router.post("/status")
 def status_post(rental_number: str = Form(...)):
-    return RedirectResponse(f"/status/{rental_number.strip().upper()}", status_code=303)
+    return RedirectResponse(f"/status/{quote(rental_number.strip().upper())}", status_code=303)
 
 
 @router.get("/status/{rental_number}", response_class=HTMLResponse)
@@ -282,14 +280,11 @@ def status_result(
     try:
         rental = rental_svc.get(rental_number)
     except NotFoundError:
-        return templates.TemplateResponse("status.html", {
-            "request": request,
+        return _render(request, "status.html", {
             "error": f"Rental number {rental_number} not found. Check your confirmation.",
             "rental_number": rental_number,
         })
-    car = car_svc.get(rental.car_id)
-    return templates.TemplateResponse("status_result.html", {
-        "request": request,
+    return _render(request, "status_result.html", {
         "rental": rental,
-        "car": car,
+        "car": car_svc.get(rental.car_id),
     })

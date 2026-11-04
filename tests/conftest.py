@@ -6,33 +6,21 @@ import json
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from app.database import make_engine
 from app.dependencies import get_session
 from app.main import app
-from app.orm_models import Base, CarRow, CustomerRow, RentalRow
+from app.orm_models import CarRow, CustomerRow, RentalRow
 from app.settings import EXAMPLES_DIR
 
 
 def _make_test_engine():
+    # Same connection setup as the app (foreign keys, BEGIN IMMEDIATE).
     # StaticPool reuses one connection so the in-memory database persists
     # across all sessions within the same test.
-    engine = create_engine(
-        "sqlite://",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-
-    @event.listens_for(engine, "connect")
-    def _fk(dbapi_conn, _record):
-        cursor = dbapi_conn.cursor()
-        cursor.execute("PRAGMA foreign_keys=ON")
-        cursor.close()
-
-    Base.metadata.create_all(engine)
-    return engine
+    return make_engine("sqlite://", poolclass=StaticPool)
 
 
 def _seed(session) -> None:

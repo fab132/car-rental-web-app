@@ -8,7 +8,7 @@ Each repository exposes the same five-method interface that the service layer
 expects: all(), get(), add(), replace(), delete().
 """
 
-from typing import Any, Callable
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -33,7 +33,7 @@ class CarRepository:
         row = self.session.get(CarRow, car_id)
         return _row_to_dict(row) if row else None
 
-    def add(self, record: dict[str, Any], make_id: Callable = None) -> dict[str, Any]:
+    def add(self, record: dict[str, Any]) -> dict[str, Any]:
         row = CarRow(**record)
         self.session.add(row)
         self.session.flush()  # assigns the auto-incremented car_id
@@ -69,7 +69,7 @@ class CustomerRepository:
         row = self.session.get(CustomerRow, customer_id)
         return _row_to_dict(row) if row else None
 
-    def add(self, record: dict[str, Any], make_id: Callable = None) -> dict[str, Any]:
+    def add(self, record: dict[str, Any]) -> dict[str, Any]:
         row = CustomerRow(**record)
         self.session.add(row)
         self.session.flush()
@@ -105,9 +105,10 @@ class RentalRepository:
         row = self.session.get(RentalRow, rental_number)
         return _row_to_dict(row) if row else None
 
-    def add(self, record: dict[str, Any], make_id: Callable = None) -> dict[str, Any]:
-        # Generate the next rental number from the highest stored one,
-        # mirroring the _next_rental_number logic in services.py.
+    def add(self, record: dict[str, Any]) -> dict[str, Any]:
+        # Rental numbers continue from the highest stored one: R-105 -> R-106.
+        # Safe under concurrent bookings because each transaction holds the
+        # write lock from its start (BEGIN IMMEDIATE, see database.py).
         all_numbers = self.session.execute(
             select(RentalRow.rental_number)
         ).scalars().all()

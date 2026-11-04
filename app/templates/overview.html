@@ -10,6 +10,9 @@
 {% if note %}
 <div class="cc-note my-3" role="status">{{ note }}</div>
 {% endif %}
+{% if error %}
+<div class="cc-error my-3" role="alert">{{ error }}</div>
+{% endif %}
 
 {% if rentals %}
 <ul class="cc-list mt-3">

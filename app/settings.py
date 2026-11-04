@@ -1,18 +1,13 @@
-"""Where the app keeps its data.
+"""Project paths.
 
-The working data lives in data/store/ and is created from data/examples/
-the first time the app starts. Set CARRENTAL_DATA_DIR to use another folder,
-for example in tests.
+The database location is configured in app/database.py (CARRENTAL_DB_URL,
+default data/carrental.db). data/examples/ holds the seed data that
+scripts/seed.py loads and the tests use.
 """
 
-import os
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 EXAMPLES_DIR = PROJECT_ROOT / "data" / "examples"
 TEMPLATES_DIR = PROJECT_ROOT / "app" / "templates"
 STATIC_DIR = PROJECT_ROOT / "app" / "static"
-
-
-def data_dir() -> Path:
-    return Path(os.environ.get("CARRENTAL_DATA_DIR", PROJECT_ROOT / "data" / "store"))
