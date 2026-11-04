@@ -1,0 +1,33 @@
+{% extends "base_phone.html" %}
+{% block title %}{{ rental.rental_number }}{% endblock %}
+{% block content %}
+{% set customer_sc = {"requested": "s-prepared", "ready": "s-ready", "handed_over": "s-handed"} %}
+{% set customer_label = {"requested": "Being prepared", "ready": "Ready", "handed_over": "Handed over"} %}
+{% set customer_msg = {
+  "requested": "We are bringing your car to the pickup area.",
+  "ready": "Your car is waiting at the pickup area. Show your rental number at the desk.",
+  "handed_over": "Your rental is complete. Thank you for choosing CityCar."
+} %}
+
+<h1>Rental {{ rental.rental_number }}</h1>
+
+<div class="my-3">
+  <span class="cc-status cc-big-status {{ customer_sc[rental.status] }}">{{ customer_label[rental.status] }}</span>
+</div>
+
+<p class="fs-5 fw-semibold">{{ customer_msg[rental.status] }}</p>
+
+<dl class="cc-facts">
+  <dt>Car</dt>
+  <dd>{{ car.make }} {{ car.model }} <span class="cc-plate">{{ car.plate }}</span></dd>
+  <dt>Pickup</dt>
+  <dd>{{ rental.pickup_date | fmtdate }}</dd>
+  <dt>Return</dt>
+  <dd>{{ rental.return_date | fmtdate }}</dd>
+</dl>
+
+{% if rental.status != "handed_over" %}
+<a class="btn btn-cc-ghost w-100 mt-2" href="/status/{{ rental.rental_number }}">Refresh status</a>
+{% endif %}
+<a class="btn btn-cc-ghost w-100 mt-2" href="/status">Check a different rental</a>
+{% endblock %}

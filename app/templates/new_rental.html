@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}New rental{% endblock %}
+{% block content %}
+<h1>New rental</h1>
+<p class="text-muted-cc mb-4">Enter the customer and choose a free car.</p>
+
+<form class="cc-panel cc-narrow" method="post" action="/new-rental">
+
+  {% if error %}
+  <div class="cc-error mb-3" role="alert">{{ error }}</div>
+  {% endif %}
+
+  <div class="mb-3">
+    <label class="form-label" for="name">Customer name</label>
+    <input id="name" name="name" class="form-control" required value="{{ name or '' }}">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label" for="licence_number">Licence number</label>
+    <input id="licence_number" name="licence_number" class="form-control" required
+           placeholder="e.g. CH 1234567" value="{{ licence_number or '' }}">
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-6">
+      <label class="form-label" for="pickup_date">Pickup date</label>
+      <input id="pickup_date" name="pickup_date" type="date" class="form-control {% if error_dates %}is-invalid{% endif %}"
+             required value="{{ pickup_date or '' }}">
+    </div>
+    <div class="col-6">
+      <label class="form-label" for="return_date">Return date</label>
+      <input id="return_date" name="return_date" type="date" class="form-control {% if error_dates %}is-invalid{% endif %}"
+             required value="{{ return_date or '' }}">
+    </div>
+    {% if error_dates %}
+    <div class="col-12">
+      <div class="invalid-feedback d-block">{{ error_dates }}</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label" for="pickup_time">Pickup time</label>
+    <input id="pickup_time" name="pickup_time" type="time" class="form-control"
+           required value="{{ pickup_time or '09:00' }}">
+  </div>
+
+  <div class="mb-4">
+    <label class="form-label" for="category">Car category</label>
+    <select id="category" name="category" class="form-select">
+      {% for cat in [("compact", "Compact"), ("suv", "SUV"), ("estate", "Estate")] %}
+      <option value="{{ cat[0] }}" {% if category == cat[0] %}selected{% endif %}>{{ cat[1] }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  {% if available_cars is defined %}
+    {% if other_categories %}
+    <div class="cc-note mb-3" role="status">
+      No car is free in the chosen category for these dates. Free cars from other categories are shown below.
+    </div>
+    {% endif %}
+
+    {% if available_cars %}
+    <fieldset class="mb-4">
+      <legend class="form-label">Available cars</legend>
+      {% for car in available_cars %}
+      <label class="cc-car-option">
+        <input class="form-check-input" type="radio" name="car_id" value="{{ car.car_id }}" required>
+        {{ car.make }} {{ car.model }}
+        <span class="cc-plate">{{ car.plate }}</span>
+        <span class="text-muted-cc ms-1">({{ car.category }})</span>
+      </label>
+      {% endfor %}
+    </fieldset>
+    <button type="submit" name="step" value="create" class="btn btn-cc">Create rental</button>
+    <button type="submit" name="step" value="search" class="btn btn-cc-ghost ms-2">Search again</button>
+    {% else %}
+    <p class="text-muted-cc">No cars are free for these dates. Try different dates.</p>
+    <button type="submit" name="step" value="search" class="btn btn-cc-ghost">Search again</button>
+    {% endif %}
+  {% else %}
+  <button type="submit" name="step" value="search" class="btn btn-cc">Find available cars</button>
+  {% endif %}
+
+</form>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base_phone.html" %}
+{% block title %}Check your rental{% endblock %}
+{% block content %}
+<h1>Check your rental</h1>
+<p class="text-muted-cc">See when your car is ready at the pickup area.</p>
+
+<form method="post" action="/status" class="mt-3">
+  <div class="mb-3">
+    <label class="form-label" for="rental_number">Rental number</label>
+    <input id="rental_number" name="rental_number" class="form-control {% if error %}is-invalid{% endif %}"
+           value="{{ rental_number or '' }}" placeholder="e.g. R-104" aria-describedby="rn-hint" required>
+    {% if error %}
+    <div class="invalid-feedback">{{ error }}</div>
+    {% else %}
+    <div id="rn-hint" class="form-text">You find it on your confirmation.</div>
+    {% endif %}
+  </div>
+  <button type="submit" class="btn btn-cc w-100">Check status</button>
+</form>
+{% endblock %}
