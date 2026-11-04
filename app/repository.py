@@ -107,8 +107,8 @@ class RentalRepository:
 
     def add(self, record: dict[str, Any]) -> dict[str, Any]:
         # Rental numbers continue from the highest stored one: R-105 -> R-106.
-        # Known limitation: two simultaneous bookings could compute the same
-        # number; the primary key then rejects the second one (README).
+        # Safe under concurrent bookings because each transaction holds the
+        # write lock from its start (BEGIN IMMEDIATE, see database.py).
         all_numbers = self.session.execute(
             select(RentalRow.rental_number)
         ).scalars().all()
