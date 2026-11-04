@@ -1,79 +1,136 @@
-"""Persistence layer: one JSON file per resource.
+"""Persistence layer: SQLAlchemy-backed repositories.
 
-This is the only module that knows the data lives in files. The service
-layer talks to JsonRepository through plain dicts, so swapping it for an
-ORM-backed repository later does not touch the routers or the rules.
+This is the only module that knows the data lives in a database. The service
+layer works with plain dicts, so swapping JSON for SQLAlchemy touched only
+this file and dependencies.py; routers, rules and tests stay the same.
+
+Each repository exposes the same five-method interface that the service layer
+expects: all(), get(), add(), replace(), delete().
 """
 
-import json
-import shutil
-import threading
-from pathlib import Path
 from typing import Any, Callable
 
-from app.settings import EXAMPLES_DIR
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from app.orm_models import CarRow, CustomerRow, RentalRow
 
 
-class JsonRepository:
-    """CRUD on a list of records stored in <data_dir>/<name>.json."""
+def _row_to_dict(row) -> dict[str, Any]:
+    """Convert an ORM row to a plain dict the service layer can consume."""
+    return {col.name: getattr(row, col.name) for col in row.__table__.columns}
 
-    _lock = threading.Lock()  # one writer at a time across all files
 
-    def __init__(self, data_dir: Path, name: str, id_field: str):
-        self.path = Path(data_dir) / f"{name}.json"
-        self.id_field = id_field
-        if not self.path.exists():
-            self.path.parent.mkdir(parents=True, exist_ok=True)
-            seed = EXAMPLES_DIR / f"{name}.json"
-            if seed.exists():
-                shutil.copy(seed, self.path)
-            else:
-                self.path.write_text("[]", encoding="utf-8")
-
-    # ----- low level -----
-
-    def _load(self) -> list[dict[str, Any]]:
-        return json.loads(self.path.read_text(encoding="utf-8"))
-
-    def _save(self, records: list[dict[str, Any]]) -> None:
-        # Write to a temp file first, then replace, so a crash never leaves half a file.
-        tmp = self.path.with_suffix(".tmp")
-        tmp.write_text(json.dumps(records, indent=2, ensure_ascii=False), encoding="utf-8")
-        tmp.replace(self.path)
-
-    # ----- CRUD -----
+class CarRepository:
+    def __init__(self, session: Session):
+        self.session = session
 
     def all(self) -> list[dict[str, Any]]:
-        return self._load()
+        rows = self.session.execute(select(CarRow)).scalars().all()
+        return [_row_to_dict(r) for r in rows]
 
-    def get(self, record_id: Any) -> dict[str, Any] | None:
-        return next((r for r in self._load() if r[self.id_field] == record_id), None)
+    def get(self, car_id: int) -> dict[str, Any] | None:
+        row = self.session.get(CarRow, car_id)
+        return _row_to_dict(row) if row else None
 
-    def add(self, record: dict[str, Any], make_id: Callable[[list[dict]], Any]) -> dict[str, Any]:
-        """Store a new record. make_id picks its identifier from the existing
-        records inside the lock, so two requests never get the same id."""
-        with self._lock:
-            records = self._load()
-            record = {self.id_field: make_id(records), **record}
-            records.append(record)
-            self._save(records)
-        return record
+    def add(self, record: dict[str, Any], make_id: Callable = None) -> dict[str, Any]:
+        row = CarRow(**record)
+        self.session.add(row)
+        self.session.flush()  # assigns the auto-incremented car_id
+        return _row_to_dict(row)
 
-    def replace(self, record_id: Any, record: dict[str, Any]) -> dict[str, Any] | None:
-        with self._lock:
-            records = self._load()
-            for i, r in enumerate(records):
-                if r[self.id_field] == record_id:
-                    records[i] = record
-                    self._save(records)
-                    return record
-        return None
+    def replace(self, car_id: int, record: dict[str, Any]) -> dict[str, Any] | None:
+        row = self.session.get(CarRow, car_id)
+        if row is None:
+            return None
+        for key, value in record.items():
+            setattr(row, key, value)
+        self.session.flush()
+        return _row_to_dict(row)
 
-    def delete(self, record_id: Any) -> bool:
-        with self._lock:
-            records = self._load()
-            kept = [r for r in records if r[self.id_field] != record_id]
-            if len(kept) == len(records):
-                return False
-            self._save(kept)
+    def delete(self, car_id: int) -> bool:
+        row = self.session.get(CarRow, car_id)
+        if row is None:
+            return False
+        self.session.delete(row)
+        self.session.flush()
+        return True
+
+
+class CustomerRepository:
+    def __init__(self, session: Session):
+        self.session = session
+
+    def all(self) -> list[dict[str, Any]]:
+        rows = self.session.execute(select(CustomerRow)).scalars().all()
+        return [_row_to_dict(r) for r in rows]
+
+    def get(self, customer_id: int) -> dict[str, Any] | None:
+        row = self.session.get(CustomerRow, customer_id)
+        return _row_to_dict(row) if row else None
+
+    def add(self, record: dict[str, Any], make_id: Callable = None) -> dict[str, Any]:
+        row = CustomerRow(**record)
+        self.session.add(row)
+        self.session.flush()
+        return _row_to_dict(row)
+
+    def replace(self, customer_id: int, record: dict[str, Any]) -> dict[str, Any] | None:
+        row = self.session.get(CustomerRow, customer_id)
+        if row is None:
+            return None
+        for key, value in record.items():
+            setattr(row, key, value)
+        self.session.flush()
+        return _row_to_dict(row)
+
+    def delete(self, customer_id: int) -> bool:
+        row = self.session.get(CustomerRow, customer_id)
+        if row is None:
+            return False
+        self.session.delete(row)
+        self.session.flush()
+        return True
+
+
+class RentalRepository:
+    def __init__(self, session: Session):
+        self.session = session
+
+    def all(self) -> list[dict[str, Any]]:
+        rows = self.session.execute(select(RentalRow)).scalars().all()
+        return [_row_to_dict(r) for r in rows]
+
+    def get(self, rental_number: str) -> dict[str, Any] | None:
+        row = self.session.get(RentalRow, rental_number)
+        return _row_to_dict(row) if row else None
+
+    def add(self, record: dict[str, Any], make_id: Callable = None) -> dict[str, Any]:
+        # Generate the next rental number from the highest stored one,
+        # mirroring the _next_rental_number logic in services.py.
+        all_numbers = self.session.execute(
+            select(RentalRow.rental_number)
+        ).scalars().all()
+        highest = max((int(n.split("-")[1]) for n in all_numbers), default=100)
+        rental_number = f"R-{highest + 1}"
+        row = RentalRow(rental_number=rental_number, **record)
+        self.session.add(row)
+        self.session.flush()
+        return _row_to_dict(row)
+
+    def replace(self, rental_number: str, record: dict[str, Any]) -> dict[str, Any] | None:
+        row = self.session.get(RentalRow, rental_number)
+        if row is None:
+            return None
+        for key, value in record.items():
+            setattr(row, key, value)
+        self.session.flush()
+        return _row_to_dict(row)
+
+    def delete(self, rental_number: str) -> bool:
+        row = self.session.get(RentalRow, rental_number)
+        if row is None:
+            return False
+        self.session.delete(row)
+        self.session.flush()
         return True
