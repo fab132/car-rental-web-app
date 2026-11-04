@@ -46,18 +46,25 @@ class Customer(CustomerIn):
 
 # ---------- rentals ----------
 
+PICKUP_TIME_PATTERN = r"^([01]\d|2[0-3]):[0-5]\d$"
+
+
+def _check_return_after_pickup(pickup_date: date, return_date: date) -> None:
+    # Business rule 2: the return date must be after the pickup date.
+    if return_date <= pickup_date:
+        raise ValueError("return_date must be after pickup_date")
+
+
 class RentalIn(StrictModel):
     customer_id: int = Field(gt=0)
     car_id: int = Field(gt=0)
     pickup_date: date
     return_date: date
-    pickup_time: str = Field(pattern=r"^([01]\d|2[0-3]):[0-5]\d$", examples=["09:00"])
+    pickup_time: str = Field(pattern=PICKUP_TIME_PATTERN, examples=["09:00"])
 
     @model_validator(mode="after")
     def return_after_pickup(self):
-        # Business rule 2: the return date must be after the pickup date.
-        if self.return_date <= self.pickup_date:
-            raise ValueError("return_date must be after pickup_date")
+        _check_return_after_pickup(self.pickup_date, self.return_date)
         return self
 
 
@@ -67,6 +74,23 @@ class RentalUpdate(RentalIn):
 
 class Rental(RentalUpdate):
     rental_number: str
+
+
+class BookingIn(StrictModel):
+    """What Marco enters on the New rental screen: the customer by name and
+    licence (found or created) plus the chosen car and period. Used by the
+    workflow screen only; the API keeps POST /customers and POST /rentals."""
+
+    customer: CustomerIn
+    car_id: int = Field(gt=0)
+    pickup_date: date
+    return_date: date
+    pickup_time: str = Field(pattern=PICKUP_TIME_PATTERN)
+
+    @model_validator(mode="after")
+    def return_after_pickup(self):
+        _check_return_after_pickup(self.pickup_date, self.return_date)
+        return self
 
 
 class Availability(BaseModel):

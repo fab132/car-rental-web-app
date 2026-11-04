@@ -8,19 +8,9 @@ lives here, so there is exactly one place to read and test them.
 from datetime import date
 
 from app.errors import ConflictError, NotFoundError
-from app.models import (Availability, Car, CarIn, Category, Customer, CustomerIn,
-                        Rental, RentalIn, RentalUpdate)
+from app.models import (Availability, BookingIn, Car, CarIn, Category, Customer,
+                        CustomerIn, Rental, RentalIn, RentalUpdate)
 from app.repository import CarRepository, CustomerRepository, RentalRepository
-
-
-def _next_int(field: str):
-    return lambda records: max((r[field] for r in records), default=0) + 1
-
-
-def _next_rental_number(records: list[dict]) -> str:
-    # Rental numbers continue from the highest existing one: R-105 -> R-106.
-    highest = max((int(r["rental_number"].split("-")[1]) for r in records), default=100)
-    return f"R-{highest + 1}"
 
 
 def periods_overlap(a_start: date, a_end: date, b_start: date, b_end: date) -> bool:
@@ -59,7 +49,7 @@ class CarService:
 
     def create(self, data: CarIn) -> Car:
         self._check_plate_unique(data.plate)
-        return Car(**self.cars.add(data.model_dump(), _next_int("car_id")))
+        return Car(**self.cars.add(data.model_dump()))
 
     def update(self, car_id: int, data: CarIn) -> Car:
         self.get(car_id)
@@ -99,7 +89,7 @@ class CustomerService:
 
     def create(self, data: CustomerIn) -> Customer:
         self._check_licence_unique(data.licence_number)
-        return Customer(**self.customers.add(data.model_dump(), _next_int("customer_id")))
+        return Customer(**self.customers.add(data.model_dump()))
 
     def update(self, customer_id: int, data: CustomerIn) -> Customer:
         self.get(customer_id)
@@ -180,7 +170,26 @@ class RentalService:
         self._check_car_free(data)
         # Rule 4: a new rental always starts as requested.
         record = {**data.model_dump(mode="json"), "status": "requested"}
-        return Rental(**self.rentals.add(record, _next_rental_number))
+        return Rental(**self.rentals.add(record))
+
+    def book(self, data: BookingIn) -> Rental:
+        """New rental screen: reuse the customer with this licence or create
+        one, then create the rental. Every check runs before the first write,
+        so a rejected booking never leaves a new customer behind."""
+        if self.cars.get(data.car_id) is None:
+            raise NotFoundError(f"Car {data.car_id} not found")
+        blocking = self._blocking_rental(data.car_id, data.pickup_date, data.return_date)
+        if blocking:
+            raise ConflictError(
+                f"Car {data.car_id} is already rented in this period (rental {blocking})"
+            )
+        licence = data.customer.licence_number.casefold()
+        existing = next((c for c in self.customers.all()
+                         if c["licence_number"].casefold() == licence), None)
+        customer_id = (existing or self.customers.add(data.customer.model_dump()))["customer_id"]
+        return self.create(RentalIn(customer_id=customer_id, car_id=data.car_id,
+                                    pickup_date=data.pickup_date, return_date=data.return_date,
+                                    pickup_time=data.pickup_time))
 
     def update(self, rental_number: str, data: RentalUpdate) -> Rental:
         current = self.get(rental_number)

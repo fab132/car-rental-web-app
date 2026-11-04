@@ -17,7 +17,9 @@ from app.settings import STATIC_DIR
 app = FastAPI(
     title="CityCar Rental API",
     version="0.1.0",
-    description="Admin CRUD for cars, customers and rentals (Milestone 2).",
+    description="Admin CRUD for cars, customers and rentals. The workflow screens "
+                "(/, /overview, /queue, /new-rental, /status) use the same services "
+                "and are not part of this contract.",
 )
 
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
