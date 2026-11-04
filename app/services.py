@@ -10,7 +10,7 @@ from datetime import date
 from app.errors import ConflictError, NotFoundError
 from app.models import (Availability, Car, CarIn, Category, Customer, CustomerIn,
                         Rental, RentalIn, RentalUpdate)
-from app.repository import JsonRepository
+from app.repository import CarRepository, CustomerRepository, RentalRepository
 
 
 def _next_int(field: str):
@@ -39,7 +39,7 @@ ALLOWED_STATUS_CHANGES = {
 
 
 class CarService:
-    def __init__(self, cars: JsonRepository, rentals: JsonRepository):
+    def __init__(self, cars: CarRepository, rentals: RentalRepository):
         self.cars = cars
         self.rentals = rentals
 
@@ -75,7 +75,7 @@ class CarService:
 
 
 class CustomerService:
-    def __init__(self, customers: JsonRepository, rentals: JsonRepository):
+    def __init__(self, customers: CustomerRepository, rentals: RentalRepository):
         self.customers = customers
         self.rentals = rentals
 
@@ -117,7 +117,7 @@ class CustomerService:
 
 
 class RentalService:
-    def __init__(self, rentals: JsonRepository, cars: JsonRepository, customers: JsonRepository):
+    def __init__(self, rentals: RentalRepository, cars: CarRepository, customers: CustomerRepository):
         self.rentals = rentals
         self.cars = cars
         self.customers = customers
