@@ -1,6 +1,6 @@
 # CityCar Rental — car-rental-web-app
 
-**Current stage:** Milestone 2: admin API implemented with JSON storage and tests. This README is the living project document; milestones are added to it rather than to separate files.
+**Current stage:** Milestone 2 complete: admin API with SQLite persistence (SQLAlchemy 2.0), 36 tests passing. Next: Milestone 3 — Jinja template integration after the 9 Nov front-end class. This README is the living project document; milestones are added to it rather than to separate files.
 
 ## Project overview
 
