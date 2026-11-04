@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Rental created{% endblock %}
+{% block content %}
+<h1>Rental created</h1>
+
+<div class="cc-panel cc-narrow mt-3">
+  <div class="cc-note mb-4" role="status">
+    {{ rental.rental_number }} created for {{ customer.name }}. Sent to the yard queue — Luca will bring the car to the front.
+  </div>
+
+  <dl class="cc-facts">
+    <dt>Rental number</dt>
+    <dd>{{ rental.rental_number }}</dd>
+    <dt>Customer</dt>
+    <dd>{{ customer.name }}</dd>
+    <dt>Car</dt>
+    <dd>{{ car.make }} {{ car.model }} <span class="cc-plate">{{ car.plate }}</span></dd>
+    <dt>Pickup</dt>
+    <dd>{{ rental.pickup_date | fmtdate }} at {{ rental.pickup_time }}</dd>
+    <dt>Return</dt>
+    <dd>{{ rental.return_date | fmtdate }}</dd>
+    <dt>Status</dt>
+    <dd><span class="cc-status s-requested">Requested</span></dd>
+  </dl>
+
+  <div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-cc" href="/new-rental">New rental</a>
+    <a class="btn btn-cc-ghost" href="/overview">Go to overview</a>
+  </div>
+</div>
+{% endblock %}

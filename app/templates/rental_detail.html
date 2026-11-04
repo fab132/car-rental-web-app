@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Rental {{ rental.rental_number }}{% endblock %}
+{% block content %}
+<h1>Rental {{ rental.rental_number }}</h1>
+<p class="text-muted-cc">Bring the car to the pickup area, then mark it ready.</p>
+
+<div class="cc-panel cc-narrow mt-3">
+  <dl class="cc-facts">
+    <dt>Car</dt>
+    <dd>{{ car.make }} {{ car.model }} <span class="cc-plate">{{ car.plate }}</span></dd>
+    <dt>Parking spot</dt>
+    <dd class="fs-5">{{ car.parking_spot }}</dd>
+    <dt>Customer</dt>
+    <dd>{{ customer.name }}</dd>
+    <dt>Pickup date</dt>
+    <dd>{{ rental.pickup_date | fmtdate }}</dd>
+    <dt>Pickup time</dt>
+    <dd>{{ rental.pickup_time }}</dd>
+    <dt>Status</dt>
+    <dd><span class="cc-status s-requested">Requested</span></dd>
+  </dl>
+
+  <div class="d-flex flex-wrap gap-2">
+    <form method="post" action="/queue/{{ rental.rental_number }}/ready">
+      <button type="submit" class="btn btn-cc">Mark ready</button>
+    </form>
+    <a class="btn btn-cc-ghost" href="/queue">Back to queue</a>
+  </div>
+</div>
+{% endblock %}

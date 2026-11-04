@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Yard queue{% endblock %}
+{% block content %}
+<h1>Yard queue</h1>
+<p class="text-muted-cc">Sorted by pickup time. Tap a rental to see where the car is parked.</p>
+
+{% if note %}
+<div class="cc-note my-3" role="status">{{ note }}</div>
+{% endif %}
+
+{% if rentals %}
+<ul class="cc-list mt-3">
+  {% for r in rentals %}
+  {% set car = cars[r.car_id] %}
+  {% set cust = customers[r.customer_id] %}
+  <li>
+    <a class="cc-row" href="/queue/{{ r.rental_number }}">
+      <span class="time">{{ r.pickup_time }}</span>
+      <span>
+        <span class="who">{{ cust.name }}, {{ r.rental_number }}</span><br>
+        <span class="meta">{{ car.make }} {{ car.model }} <span class="cc-plate">{{ car.plate }}</span></span>
+      </span>
+      <span class="end">
+        <span class="spot">Spot {{ car.parking_spot }}</span>
+        <span class="cc-status s-requested">Requested</span>
+      </span>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<div class="cc-empty mt-4">
+  <p class="fs-5 fw-semibold">No cars are requested right now.</p>
+  <p class="text-muted-cc">New rentals appear here as soon as Marco creates them.</p>
+</div>
+{% endif %}
+{% endblock %}
