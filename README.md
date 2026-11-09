@@ -1,6 +1,6 @@
 # CityCar Rental — car-rental-web-app
 
-**Current stage:** Milestone 3 ready for the coaching on 16 November: Jinja2 workflow screens for all three workflows (Marco, Luca, Nina) served by FastAPI, backed by SQLite. API contract unchanged; 61 tests (36 API, 24 workflow screens, 1 concurrency). This README is the living project document; milestones are added to it rather than to separate files.
+**Current stage:** Milestone 3 ready for the coaching on 16 November: Jinja2 workflow screens for all three workflows (Marco, Luca, Nina) served by FastAPI, backed by SQLite. API contract unchanged; 63 tests (36 API, 26 workflow screens, 1 concurrency). This README is the living project document; milestones are added to it rather than to separate files.
 
 ## Project overview
 
@@ -156,8 +156,9 @@ The example data is a snapshot of the Overview screen on 24 September, after Luc
 5. A rental leaves the yard queue when it is marked `ready`.
 6. Only a rental with status `ready` can be marked `handed_over`.
 7. One customer and one car per rental in the first version; no editing or cancelling after submitting.
+8. An existing licence number can only be booked under the name stored for it, ignoring capitals and extra spaces; otherwise no rental is created.
 
-**Rule and exception in plain language.** A car may only be rented to one customer at a time, so a car whose rental overlaps the requested dates is not offered. The exception is the category: when nothing in the requested category is free, the app does not refuse the rental — it shows what *is* free elsewhere and lets Marco decide. In the implementation the rule lives in the service layer (`RentalService._check_car_free` in [`app/services.py`](app/services.py)); see *Implementation* below.
+**Rule and exception in plain language.** A car may only be rented to one customer at a time, so a car whose rental overlaps the requested dates is not offered. The exception is the category: when nothing in the requested category is free, the app does not refuse the rental — it shows what *is* free elsewhere and lets Marco decide. In the implementation the rule lives in the service layer (`RentalService._check_car_free` in [`app/services.py`](app/services.py)); see "Trace one API operation and one interaction" below.
 
 **Proposed operations** (draft intentions, not implemented endpoints)
 
@@ -172,30 +173,122 @@ The example data is a snapshot of the Overview screen on 24 September, after Luc
 | Hand over the keys | Change a rental's status to `handed_over` | `R-104` | Updated status | Reject when the rental is not yet `ready`? |
 | Let the customer check her rental | Read the public status of one rental | `R-104` | Car, plate, dates and a customer-friendly status | Is the rental number alone enough to identify her? |
 
-This table records the intended behaviour from the design stage; the implemented endpoints are listed under "Implementation: admin API" below.
+This table records the intended behaviour from the design stage; the implemented endpoints are listed under "API contract and architecture" below.
 
 ### Inspiration from existing apps or APIs — optional
 
 Parcel-tracking pages (for example Swiss Post) show one shipment reduced to a single status plus a short sentence on what happens next, with no login. Nina's status page copies that idea: one number in, one status and one instruction out. What we would improve is honesty about time — a tracking page often shows a stale status without saying when it was last updated, so we added an explicit *Refresh status* button rather than implying the page is live.
 
-### Implementation: admin API (Milestone 2)
+### Current workflow and progress
 
 Following the coaching feedback, the first implementation step was an admin API with full CRUD for the three domain objects, first stored in JSON files and since migrated to SQLite (see the design decisions below). The workflow screens (Milestone 3) call the same service layer.
 
-**Run it** (locally or in Codespaces):
+#### Current workflow and backend progress
+
+- **User goal supported:** the API holds the data behind all three workflows: Marco creates a rental, Luca works the yard queue and marks it ready, Nina reads its status. The sample data is in [`data/examples/`](data/examples/).
+- **Working:** all 16 endpoints listed below, implemented and covered by the 36 API tests.
+- **Partly implemented:** `POST /rentals` only accepts an existing `customer_id`. Creating a customer together with a rental exists in `RentalService.book`, which only the New rental screen uses.
+- **Still planned:** login and access checks; every endpoint is open for now.
+- **Changed from the design draft or after the first coaching:** an admin API with full CRUD came first, as agreed at the first coaching. Storage moved from JSON files to SQLite. A `ready -> requested` status change was added so a wrong *Ready* can be undone. The proposed customer fields on a rental became a `customer_id` reference.
+
+#### Current workflow and frontend choice
+
+**User and goal.** The connected journey starts with Marco at the service desk, who creates a rental for a customer with a car that is actually free ([sketch](docs/sketches/sketch-1-marco-rent-a-car.png), current screen at `/new-rental`). Luca's queue and Nina's status page continue the same rental.
+
+**Why this approach fits.** Every step is a form or a page change that ends in saved data, and nothing needs to update without a page load, so server-rendered pages cover the journey without custom JavaScript. The screens and the API run as one application and share the same rules.
+
+**Frontend approach.** The screens are server-rendered Jinja2 templates served by the same FastAPI app ([`app/routers/views.py`](app/routers/views.py), [`app/templates/`](app/templates/)), styled with Bootstrap and the CityCar CSS from the prototype. The assessment permits server-rendered templates when the approach is documented and the API covers at least one core entity; here the API covers all three. The view routes call the same service classes as the API routes, so every business rule is enforced in one place. They are excluded from the OpenAPI schema, which documents only the API.
+
+| Screen | User | Request | Service call | Stored data |
+|---|---|---|---|---|
+| New rental (`/new-rental`) | Marco | `POST /new-rental` form: search, then create | `RentalService.available`, then `RentalService.book` | Reuses the customer with the same licence or inserts one, then inserts a `requested` rental, in one transaction |
+| Yard queue (`/queue`, `/queue/{n}`) | Luca | `POST /queue/{n}/ready` | `RentalService.update` | Rental status `requested -> ready` |
+| Overview (`/overview`) | Marco | `POST /overview/{n}/handover` | `RentalService.update` | Rental status `ready -> handed_over` |
+| Status (`/status/{n}`) | Nina | `GET /status/{n}` | `RentalService.get` | Read only |
+
+Form posts answer with a `303` redirect to the updated page (post/redirect/get), so a browser refresh does not repeat the action. When a service rejects an action (409 or 404 in the API), the screen shows the message as a banner or form error instead of the API's JSON body; invalid form input is shown next to the form instead of a 422.
+
+**Tools used.** The running application is custom code: FastAPI routes, Jinja2 templates, the service layer and SQLAlchemy with SQLite. It uses no low-code or no-code platform. The templates load the Bootstrap 5 CSS toolkit from a CDN and our own `app/static/css/styles.css`, and contain no custom JavaScript. Bootstrap Studio, a visual editor, was used only for the clickable prototype in `docs/prototype/`. The browser sends ordinary HTML forms to the FastAPI view routes, which call the service classes directly in the same process and return finished HTML, so template routes and API routes share one set of business rules and one database.
+
+**What changed from the sketches or after the backend coaching**
+
+- Storage moved from JSON files to SQLite after the backend coaching, without changing the API contract.
+- *Mark ready* and *Hand over* show a short note on the updated page instead of the separate confirmation screens in the sketches, and the note does not name the next person. *Create rental* keeps its full confirmation page.
+- The Overview lists all rentals, earliest pickup first, rather than only today's.
+- A missing required field is caught by the browser's own message rather than the sketched "Enter the licence number".
+- Backend changes during integration: `RentalService.book` creates or reuses the customer and creates the rental in one transaction, and `BEGIN IMMEDIATE` keeps simultaneous bookings from getting the same rental number.
+
+**What is connected, simulated, incomplete or planned**
+
+| State | Parts |
+|---|---|
+| Connected | Create rental, mark ready and hand over save to SQLite; the status page reads the saved rental |
+| Simulated | Nothing in the running application. The clickable prototype in [`docs/prototype/`](docs/prototype/) remains a design artefact and saves nothing |
+| Incomplete | No page links to Nina's status page, so she has to open `/status` directly, although the design reaches it from her confirmation. Marco has no customer search. Undoing a wrong *Ready* (`ready -> requested`) is only possible through the API |
+| Planned | Login and access checks, after the security class |
+
+### Trace one API operation and one interaction
+
+#### API operation: create a rental
+
+**API request → input validation → business rule → storage → response**, for creating a rental:
+
+| Part | What happens in our project | Relevant code or data |
+|---|---|---|
+| API | `POST /rentals` with `{"customer_id": 1, "car_id": 2, "pickup_date": "2026-10-20", "return_date": "2026-10-23", "pickup_time": "09:00"}` | `create_rental` in [`app/routers/rentals.py`](app/routers/rentals.py) |
+| Input validation | Field types are checked, unknown fields are rejected and the return date must be after pickup. A failure returns `422` and the service is not called | `RentalIn` in [`app/models.py`](app/models.py) |
+| Business logic | The customer and car must exist, otherwise `404`. The car must be free for the whole period (rule 3), otherwise `409`. A new rental always starts as `requested` (rule 4) | `RentalService.create`, `_check_references` and `_check_car_free` in [`app/services.py`](app/services.py) |
+| Storage | The next rental number is assigned and one row is inserted into SQLite. The session commits at the end of a successful request and rolls back on an error | `RentalRepository.add` in [`app/repository.py`](app/repository.py), `get_session` in [`app/dependencies.py`](app/dependencies.py), `data/carrental.db` |
+| Response | `201` with the stored rental, including `"rental_number": "R-106"` on a freshly seeded database and `"status": "requested"` | `Rental` in [`app/models.py`](app/models.py) |
+
+Each part has one responsibility: routers handle HTTP, models check the shape of the input, services apply the rules and repositories talk to the database. They run in one application. Only the objects used during a single request are held in memory; cars, customers and rentals remain in `data/carrental.db` after a restart.
+
+#### Interface interaction: Marco creates a rental
+
+**User action → interface → request → business rule → storage → response → visible result**, for Marco creating a rental. The HTML is produced on the server by Jinja2. The interface makes no HTTP call to the JSON API: the view route calls the same service class as the API route, in the same process.
+
+| Step | What happens in our project | Relevant code or data |
+|---|---|---|
+| User action | Marco enters `Lena Graf`, licence `CH 9988776`, 16 to 18 November and Compact, chooses the VW Golf and presses *Create rental* | [`app/templates/new_rental.html`](app/templates/new_rental.html) |
+| Request | The browser sends the form as `POST /new-rental` with `car_id=1` and `step=create` | `new_rental_post` in [`app/routers/views.py`](app/routers/views.py) |
+| Processing and storage | The return date must be after pickup and `BookingIn` validates the fields. `RentalService.book` checks that the car is free (rule 3) and that the name matches an existing licence (rule 8), reuses or inserts the customer and inserts a `requested` rental (rule 4), in one transaction in `data/carrental.db` | `RentalService.book` in [`app/services.py`](app/services.py), [`app/repository.py`](app/repository.py) |
+| Result | The server answers `303` to `/new-rental/done/R-106`, and the browser loads a page built from the stored rental: "R-106 created for Lena Graf" | [`app/templates/rental_created.html`](app/templates/rental_created.html) |
+| Error case | If the car has been taken in the meantime, `book` raises `ConflictError`. The route renders the form again with the message and the cars still free, and nothing is saved | `new_rental_post` in [`app/routers/views.py`](app/routers/views.py) |
+
+### Run the current version
+
+These are the only setup instructions; the screens and the API run together in one process. Dependencies are listed in [`requirements.txt`](requirements.txt). Checked with Python 3.13.
+
+Run all commands from the repository root (`car-rental-web-app/`):
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate         # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 python scripts/seed.py            # load data/examples/ into data/carrental.db (safe to re-run)
-uvicorn app.main:app --reload     # screens on http://127.0.0.1:8000, API docs on /docs
-pytest                            # 61 tests
+uvicorn app.main:app --reload     # keep this running
 ```
 
-The app stores its data in the SQLite file `data/carrental.db`, created empty on first start; `scripts/seed.py` fills it with the example data, so the JSON files in the repository never change. Without the seed step the app starts with no cars, customers or rentals. To reset, delete `data/carrental.db` and run the seed script again. Set `CARRENTAL_DB_URL` to use another database file. Tests use a fresh in-memory database and never touch `data/carrental.db`.
+| What | Where |
+|---|---|
+| Staff screens (browser entry point) | `http://127.0.0.1:8000` |
+| Customer status page | `http://127.0.0.1:8000/status` |
+| API documentation (Swagger UI) | `http://127.0.0.1:8000/docs` |
+| Tests, in a second terminal with the environment activated | `pytest` (63 tests) |
+
+In Codespaces, run the same commands and open port 8000 from the **Ports** tab, adding `/docs` for the API. The pages load Bootstrap and the Inter font from the internet, so without a connection they work but lose most of their styling.
+
+**Sample data.** The app stores its data in the SQLite file `data/carrental.db`, created empty on first start; `scripts/seed.py` fills it with the fictional example data, so the JSON files in the repository never change. Without the seed step the app starts with no cars, customers or rentals. To reset, delete `data/carrental.db` and run the seed script again. Set `CARRENTAL_DB_URL` to use another database file. Tests use a fresh in-memory database and never touch `data/carrental.db`.
+
+**Check a saved result.** Read it back with `GET /rentals/{rental_number}` in `/docs`, or open `data/carrental.db` with a SQLite viewer. No credentials are needed or stored.
+
+### Record what you checked
+
+#### API
 
 **Demo steps (API)**
 
-Open `http://127.0.0.1:8000/docs` and use the Swagger UI to walk through the following cases. The same journey through the screens is under "Screen walkthrough" in the Milestone 3 section below.
+Open `http://127.0.0.1:8000/docs` and use the Swagger UI to walk through the following cases. The same journey through the screens is under "Screens" below.
 
 1. **Create a rental — 201 success.** `POST /rentals` → Try it out → paste the body below → Execute. Expect `201` with a new rental number.
 ```json
@@ -218,7 +311,39 @@ Open `http://127.0.0.1:8000/docs` and use the Swagger UI to walk through the fol
 
 6. **Not found — 404.** `GET /rentals/{rental_number}` → Try it out → `rental_number: R-999` → Execute. Expect `404`.
 
-7. **Run tests.** In the terminal: `pytest` — all 61 tests should pass.
+7. **Run tests.** In the terminal: `pytest` — all 63 tests should pass.
+
+Checked on 9 November 2026 on a freshly seeded database, by sending the demo requests with `curl` and reading the stored rentals back through the API. All 63 tests passed the same day.
+
+| Case | Request or input | Expected result | Observed result / remaining issue |
+|---|---|---|---|
+| Success | Demo step 1: `POST /rentals` | `201`, new rental saved as `requested` | `201` with `R-106`; `GET /rentals/R-106` returned the same rental; stored rentals went from 4 to 5 |
+| Rejected operation | Demo step 2: the same request again | `409`, nothing saved | `409` "Car 2 is already rented in this period (rental R-106)"; still 5 rentals |
+| Invalid input | `POST /rentals` with the return date before the pickup date | `422`, nothing saved | `422` "return_date must be after pickup_date"; still 5 rentals |
+| Read | Demo steps 3 and 4: yard queue and free cars | Only requested rentals; car 2 not offered | Queue returned R-105 and R-106; free cars were 1, 3, 4 and 5 |
+| Invalid dates | Demo step 5: swapped dates on `GET /cars/available` | `422` | `422` "return_date must be after pickup_date" |
+| Not found | Demo step 6: `GET /rentals/R-999` | `404`, nothing changes | `404` "Rental R-999 not found"; rental count unchanged |
+
+#### Screens
+
+Setup as in "Run the current version", on a freshly seeded database, so the next rental number is `R-106`. Checked on 9 November 2026 by sending the same requests as the forms with `curl`, not by clicking in a browser. Saved data was read back through the API, so a success below means the rental was stored, not only that a message was shown.
+
+| Case | Action or input | Expected result | Observed result / remaining issue |
+|---|---|---|---|
+| Success | **New rental:** name `Lena Graf`, licence `CH 9988776`, pickup `2026-11-16`, return `2026-11-18`, category Compact → *Find available cars* → choose VW Golf → *Create rental* | Confirmation page; new customer and a `requested` rental saved | "R-106 created for Lena Graf", status *Requested*; `GET /rentals/R-106` returned it with `customer_id` 5; rentals went from 4 to 5 |
+| No duplicate | Refresh the confirmation page | Same page; the form is not sent again | Page loaded again; still 5 rentals |
+| Invalid input | Same details with return `2026-11-15` → *Find available cars* | Message next to the dates; values kept; nothing saved | "Return date must be after pickup date."; values kept; still 5 rentals |
+| Rejected operation | Open New rental in two tabs, search the same dates in both, then create the rental with the same car in each | Second tab explains the conflict and offers the free cars; nothing saved | "Car 1 is already rented in this period (rental R-106)"; the 2 other compact cars offered; still 5 rentals and 5 customers |
+| Rejected operation | **New rental:** existing licence `CH 7654321` (Tom Meier) with the name `Anna Muster` → *Create rental*. Checked on its own freshly seeded database | Booking rejected; stored name not shown; values kept; nothing saved | "Licence CH 7654321 is registered to a different name. Check the name and the licence number."; values kept; rental and customer counts unchanged |
+| Rejected operation | **Overview** while R-106 is *Requested*; then a direct `POST /overview/R-106/handover` | No *Hand over* button; the server rejects the direct request | No button; banner "Status cannot change from requested to handed_over"; status stayed `requested` |
+| Customer view | Open `/status/R-106` | Customer-friendly status | "Being prepared", "We are bringing your car to the pickup area." |
+| Success | **Yard queue:** open R-106 → *Mark ready* | Note; rental leaves the queue; status saved | "R-106 marked ready"; no longer in the queue; status `ready` |
+| Customer view | Refresh `/status/R-106` | Shows the new status | "Ready", "Your car is waiting at the pickup area. Show your rental number at the desk." |
+| Success | **Overview:** *Hand over* on R-106 | Note; status saved | "R-106 handed over"; status `handed_over` |
+| Error | `/status`, rental number `R-999` | Message; no rental shown | "Rental number R-999 not found. Check your confirmation." |
+| Persistence | Stop and restart the server, then `GET /rentals/R-106` | Rental still stored | `200`, status `handed_over` |
+
+### API contract and architecture
 
 **Layers**
 
@@ -266,7 +391,7 @@ The full contract with request and response schemas is generated by FastAPI at `
 | Availability is computed, never stored | Same reasoning as in the data model: a stored `available` flag could disagree with the rentals. |
 | A car returned on a day can be picked up the same day | Periods overlap only if `a.pickup < b.return and b.pickup < a.return`. |
 | Status changes: `requested -> ready -> handed_over`, plus `ready -> requested` | Enforces rule 6 and gives Luca a way back when he marks the wrong rental ready (open question in section 3). A handed-over rental is final. |
-| `POST /rentals` takes `customer_id`, not name and licence | Admin CRUD works on existing customers. Creating the customer on the fly belongs to Marco's workflow endpoint later. |
+| `POST /rentals` takes `customer_id`, not name and licence | Admin CRUD works on existing customers. Creating the customer together with the rental is done by `RentalService.book`, which the New rental screen uses. |
 | Licence number is unique per customer | Answers the returning-customer question for now: one record per licence, reused across rentals. |
 | A missing car or customer in the request body is 404 | The referenced resource does not exist; the request shape itself is valid, so 422 would mislead. |
 | Rental numbers continue from the highest one (`R-105 -> R-106`) | Keeps the human-readable format from the design. They stay guessable; see the security question in section 3. |
@@ -274,42 +399,13 @@ The full contract with request and response schemas is generated by FastAPI at `
 | Unknown request fields are rejected | Catches typos like `pickupdate` as 422 instead of silently dropping them. |
 | Each test gets a fresh in-memory database seeded from the example data | Tests never touch `data/carrental.db` and never depend on each other's order. |
 
-### Implementation: workflow screens (Milestone 3)
-
-**Frontend approach.** The screens are server-rendered Jinja2 templates served by the same FastAPI app ([`app/routers/views.py`](app/routers/views.py), [`app/templates/`](app/templates/)), styled with Bootstrap and the CityCar CSS from the prototype. The assessment permits server-rendered templates when the approach is documented and the API covers at least one core entity; here the API covers all three. The view routes call the same service classes as the API routes, so every business rule is enforced in one place. They are excluded from the OpenAPI schema, which documents only the API.
-
-| Screen | User | Request | Service call | Stored data |
-|---|---|---|---|---|
-| New rental (`/new-rental`) | Marco | `POST /new-rental` form: search, then create | `RentalService.available`, then `RentalService.book` | Reuses the customer with the same licence or inserts one, then inserts a `requested` rental, in one transaction |
-| Yard queue (`/queue`, `/queue/{n}`) | Luca | `POST /queue/{n}/ready` | `RentalService.update` | Rental status `requested -> ready` |
-| Overview (`/overview`) | Marco | `POST /overview/{n}/handover` | `RentalService.update` | Rental status `ready -> handed_over` |
-| Status (`/status/{n}`) | Nina | `GET /status/{n}` | `RentalService.get` | Read only |
-
-Form posts answer with a `303` redirect to the updated page (post/redirect/get), so a browser refresh does not repeat the action. When a service rejects an action (409 or 404 in the API), the screen shows the message as a banner or form error instead of the API's JSON body; invalid form input is shown next to the form instead of a 422.
-
-**Tools used.** The running application is custom code: FastAPI routes, Jinja2 templates, the service layer and SQLAlchemy with SQLite. It uses no low-code or no-code platform. The templates load the Bootstrap 5 CSS toolkit from a CDN and our own `app/static/css/styles.css`, and contain no custom JavaScript. Bootstrap Studio, a visual editor, was used only for the clickable prototype in `docs/prototype/`. The browser sends ordinary HTML forms to the FastAPI view routes, which call the service classes directly in the same process and return finished HTML, so template routes and API routes share one set of business rules and one database.
-
-**Screen walkthrough: from new rental to handover.** Run the setup above with a freshly seeded database (the next rental number is then `R-106`) and open `http://127.0.0.1:8000`.
-
-| Step | Screen and action | Expected result | Stored data |
-|---|---|---|---|
-| 1 · success | **New rental:** name `Lena Graf`, licence `CH 9988776`, pickup `2026-11-16`, return `2026-11-18`, category Compact → *Find available cars* → choose VW Golf → *Create rental* | Confirmation "R-106 created for Lena Graf", status *Requested* | New customer and a new `requested` rental, in one transaction |
-| 2 · no duplicate | Refresh the confirmation page in the browser | Same confirmation; the form is not sent again | Unchanged: still one R-106 |
-| 3 · error | **New rental:** same details, but return `2026-11-15` → *Find available cars* | "Return date must be after pickup date." next to the dates; the entered values stay in the form | Nothing is written |
-| 4 · error | **Overview:** R-106 is still *Requested*, so it has no *Hand over* button. A direct `POST /overview/R-106/handover` is rejected by the server | Banner "Status cannot change from requested to handed_over" after the direct request | Unchanged: `requested` |
-| 5 · customer view | Open `/status/R-106` | "Being prepared" with car and dates | Read only |
-| 6 · success | **Yard queue:** open R-106 → mark it ready | Note "R-106 marked ready"; the rental leaves the queue | Status `requested -> ready` |
-| 7 · customer view | Refresh `/status/R-106` | "Ready", "Your car is waiting at the pickup area" | Read only |
-| 8 · success | **Overview:** *Hand over* on R-106 | Note "R-106 handed over" | Status `ready -> handed_over` |
-
-To see a booking conflict, open the New rental form in two tabs, search the same dates in both and create the rental with the same car in each. The second tab shows "Car 1 is already rented in this period (rental R-106)" with the cars that are still free, and no second rental is stored. To check the saved result independently of the screens, call `GET /rentals/R-106` in `/docs`.
-
-**Known limitations**
+### Known limitations
 
 - No login yet: all staff screens and the API are open. The operations to protect are identified after the Milestone 3 coaching; authentication follows the security class.
 - The customer status page needs only the rental number, which is sequential and guessable (open question in section 3). It shows the car and dates, not the customer's name or licence.
 - Pickup dates in the past are accepted. The example data and the API tests use past dates, so a rule needs a decision on how to keep them.
-- On the New rental screen, an existing licence number reuses the stored customer. A different name typed on the form is ignored without a warning; the confirmation page shows the stored name.
+- A real name change or a different spelling is rejected on the New rental screen until the customer record is corrected with `PUT /customers/{customer_id}` (rule 8). Marco has no screen for that yet.
+- An empty required field that gets past the browser's check returns the raw JSON `422` instead of a message on the form.
 
 ## 3. Project management
 
@@ -317,7 +413,7 @@ To see a booking conflict, open the New rental form in two tabs, search the same
 
 | Question / decision | Current position | Next step / person |
 |---|---|---|
-| How does Marco handle a returning customer? | **Decided:** the licence number is unique, so one customer record is reused across rentals, including on the New rental screen. The screen has no customer search, and a different name typed for an existing licence is ignored | Ask at the Milestone 3 coaching whether a customer lookup or a name-mismatch warning is needed |
+| How does Marco handle a returning customer? | **Decided:** the licence number is unique, so one customer record is reused across rentals, including on the New rental screen. A booking whose name does not match the stored licence is rejected (rule 8), so a mistyped licence cannot book under another customer. The screen has no customer search | Ask at the Milestone 3 coaching whether rejecting is the right rule and whether a customer lookup is needed |
 | Can anyone who guesses a rental number see a stranger's rental? | Open and the most important gap we found. Rental numbers are sequential and easy to guess | Discuss requiring the last name alongside the rental number |
 | What if Marco picks the wrong car after submitting? | The admin API can correct a rental with `PUT`; Marco's own screen still has no editing in version 1 | Decide whether Marco gets a correction screen |
 | What if the car is damaged or not at its spot? | Out of scope for version 1; Luca tells Marco directly | Revisit when the three workflows are implemented |
@@ -327,13 +423,21 @@ To see a booking conflict, open the New rental form in two tabs, search the same
 | What does the customer see while the car is being fetched? | **Decided:** "Being prepared" with a Refresh button; the stored status stays `requested` | Done |
 | Does a rental ever hold more than one car? | **Decided:** one car and one customer per rental in version 1 | Done |
 
+### Progress and questions for coaching
+
+- **Changed since Milestone 2:** storage moved to SQLite, Jinja2 screens were added for all three workflows, errors are shown on the page, simultaneous bookings get distinct rental numbers, a booking whose name does not match the stored licence is rejected, and 27 tests were added (26 for the screens, 1 for concurrency).
+- **Working now:** all three workflows connected end to end, with data kept across a restart; the API can be demonstrated independently of the screens.
+- **Open issue:** anyone who guesses a rental number can read that rental's status, because the numbers are sequential and there is no login yet.
+- **Questions:** (1) We reject a booking when the name does not match the stored licence, so a real name change has to go through the API. Is that the right rule, or should Marco be able to confirm or correct the name? (2) Is the rental number alone enough for the customer status page, or should we also require the last name?
+- **Next step:** Fabian and Samson click through the screen checks under "Record what you checked" in a browser before the coaching and record any difference. After the coaching, they record the agreed corrections here and identify the operations that need access protection.
+
 ### Milestone progress
 
 | Milestone | Available evidence | Status / next step |
 |---|---|---|
 | 1 — Design draft | Three workflows with alternatives ([`docs/exercise1-workflows.docx`](docs/exercise1-workflows.docx)), sketches for all three plus shared navigation, embedded as images in section 2 ([`docs/sketches/`](docs/sketches/)), a 17-page clickable prototype, [published live](https://fab132.github.io/car-rental-web-app/prototype/) ([`docs/prototype/`](docs/prototype/)), consistent example JSON ([`data/examples/`](data/examples/)) and the proposed operations above | Complete. After coaching (05.10, Devid Montecchiari): no design changes required. Agreed implementation roadmap: (1) first admin perspective with CRUD operations, e.g. JSON-based db; (2) then move to in-memory/ORM; (3) then add the other blocks based on class. Milestone 2 implements step 1. |
 | 2 — Contract and available implementation | Admin CRUD API for cars, customers and rentals, now backed by SQLite via SQLAlchemy 2.0 ([`app/`](app/)), business rules in a service layer, 36 pytest tests ([`tests/`](tests/)), seed script ([`scripts/seed.py`](scripts/seed.py)), generated OpenAPI at `/docs` | M2 complete (JSON → SQLite, coaching 26.10). API contract and all tests unchanged. Milestone 3 builds on this API and service layer. |
-| 3 — Workflow screens | Jinja2 templates for all three workflows ([`app/templates/`](app/templates/)), HTML routes in [`app/routers/views.py`](app/routers/views.py), CityCar CSS served as static files; customer status page with phone layout; 24 screen tests ([`tests/test_views.py`](tests/test_views.py)) | Ready for the coaching on 16.11. Screens and error handling done; frontend approach, tools, request/data flow and a screen walkthrough with success and error examples documented in section 2. After coaching: record integration corrections and identify the operations that need access protection. |
+| 3 — Integration (workflow screens) | Jinja2 templates for all three workflows ([`app/templates/`](app/templates/)), HTML routes in [`app/routers/views.py`](app/routers/views.py), CityCar CSS served as static files; customer status page with phone layout; 26 screen tests ([`tests/test_views.py`](tests/test_views.py)) | Ready for the coaching on 16.11. Screens and error handling done; frontend approach, tools, a traced interaction and recorded success and error checks documented in section 2. After coaching: record integration corrections and identify the operations that need access protection. |
 
 Contributions are described per person in the responsibilities table and in the decisions above; commit counts are not a measure of individual effort.
 
@@ -343,6 +447,7 @@ Contributions are described per person in the responsibilities table and in the 
 - **Bootstrap Studio** with **Bootstrap 5** — the clickable prototype in `docs/prototype/`, published with **GitHub Pages** from the `docs/` folder. The generated CSS was kept as exported; only content and screen states are ours.
 - **Inter** (with a system sans-serif fallback) — typeface used in the sketches and prototype.
 - **FastAPI** — the backend framework since Milestone 2, following the HS26 Python/FastAPI teaching path.
+- **Uvicorn**, **Jinja2**, **SQLAlchemy 2.0**, **SQLite** and **pytest** — application server, templates, persistence and tests; versions in [`requirements.txt`](requirements.txt).
 - Course material: exercise 1 (workflow tables), exercise 2 (sketches) and exercise 3 (clickable prototype) from the design sessions. The bar-ordering scenario used in class was replaced with our own car-rental scenario; we kept its structure of a workflow table with numbered alternatives.
 - Template lineage: the earlier [Pizzeria Reference Project](https://github.com/FHNW-INT/Pizzeria_Reference_Project) organised documentation around analysis, design, implementation, execution and project management. This README follows the HS26 template that updates that structure; the Pizzeria project's Java/Spring and hosted Budibase instructions do not apply here.
 
