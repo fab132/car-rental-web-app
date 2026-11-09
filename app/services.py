@@ -18,6 +18,11 @@ def periods_overlap(a_start: date, a_end: date, b_start: date, b_end: date) -> b
     return a_start < b_end and b_start < a_end
 
 
+def same_name(a: str, b: str) -> bool:
+    # Differences in capitals or spacing are not a different person.
+    return " ".join(a.split()).casefold() == " ".join(b.split()).casefold()
+
+
 # Allowed status changes. Forward along the workflow, plus ready -> requested
 # so a car marked ready by mistake can go back into the yard queue.
 # A handed-over rental is final in version 1.
@@ -186,6 +191,13 @@ class RentalService:
         licence = data.customer.licence_number.casefold()
         existing = next((c for c in self.customers.all()
                          if c["licence_number"].casefold() == licence), None)
+        if existing and not same_name(existing["name"], data.customer.name):
+            # Rule 8: a mistyped licence must not book under another customer.
+            # The message does not disclose the stored name.
+            raise ConflictError(
+                f"Licence {data.customer.licence_number} is registered to a different name. "
+                "Check the name and the licence number."
+            )
         customer_id = (existing or self.customers.add(data.customer.model_dump()))["customer_id"]
         return self.create(RentalIn(customer_id=customer_id, car_id=data.car_id,
                                     pickup_date=data.pickup_date, return_date=data.return_date,

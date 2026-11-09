@@ -92,6 +92,27 @@ def test_returning_customer_is_reused(client):
     assert client.get("/rentals/R-106").json()["customer_id"] == 1
 
 
+def test_returning_customer_name_ignores_case_and_extra_spaces(client):
+    data = {**NEW_RENTAL, "name": "  nina   KELLER ", "licence_number": "CH 1234567",
+            "step": "create", "car_id": "3"}
+    client.post("/new-rental", data=data)
+    assert len(client.get("/customers").json()) == 4
+    assert client.get("/rentals/R-106").json()["customer_id"] == 1
+
+
+def test_name_not_matching_licence_shows_error_and_stores_nothing(client):
+    # CH 1234567 belongs to Nina Keller in the example data.
+    data = {**NEW_RENTAL, "name": "Lea Brunner", "licence_number": "CH 1234567",
+            "step": "create", "car_id": "3"}
+    response = client.post("/new-rental", data=data)
+    assert response.status_code == 200
+    assert "Licence CH 1234567 is registered to a different name" in response.text
+    assert 'value="Lea Brunner"' in response.text  # Marco's input stays in the form
+    assert "Nina Keller" not in response.text  # the stored name is not disclosed
+    assert len(client.get("/customers").json()) == 4
+    assert len(client.get("/rentals").json()) == 4
+
+
 def test_conflicting_booking_shows_error_and_stores_nothing(client):
     # Car 1 is rented as R-104 from 24 to 27 September.
     data = {**NEW_RENTAL, "pickup_date": "2026-09-25", "return_date": "2026-09-26",
